@@ -802,8 +802,8 @@
 		270F9ECB185997F60063C8B6 = {
 			isa = PBXGroup;
 			children = (
-				270F9EDD185997F60063C8B6 /* Hot Wheels 2.0 */,
-				270F9EFF185997F60063C8B6 /* Hot Wheels 2.0Tests */,
+				270F9EDD185997F60063C8B6 /* HotWheels2 */,
+				270F9EFF185997F60063C8B6 /* HotWheels2Tests */,
 				270F9ED6185997F60063C8B6 /* Frameworks */,
 				270F9ED5185997F60063C8B6 /* Products */,
 			);
@@ -836,7 +836,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		270F9EDD185997F60063C8B6 /* Hot Wheels 2.0 */ = {
+		270F9EDD185997F60063C8B6 /* HotWheels2 */ = {
 			isa = PBXGroup;
 			children = (
 				27CE4E7A18C658A300C49923 /* UserManager.h */,
@@ -881,7 +881,7 @@
 				27BC113618A2DC5200EA3769 /* addCarViewController.m */,
 			);
 			indentWidth = 1;
-			path = "Hot Wheels 2.0";
+			path = HotWheels2;
 			sourceTree = "<group>";
 			tabWidth = 1;
 			usesTabs = 1;
@@ -897,13 +897,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		270F9EFF185997F60063C8B6 /* Hot Wheels 2.0Tests */ = {
+		270F9EFF185997F60063C8B6 /* HotWheels2Tests */ = {
 			isa = PBXGroup;
 			children = (
 				270F9F05185997F60063C8B6 /* Hot_Wheels_2_0Tests.m */,
 				270F9F00185997F60063C8B6 /* Supporting Files */,
 			);
-			path = "Hot Wheels 2.0Tests";
+			path = HotWheels2Tests;
 			sourceTree = "<group>";
 		};
 		270F9F00185997F60063C8B6 /* Supporting Files */ = {
