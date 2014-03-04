@@ -2083,8 +2083,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Hot Wheels 2.0/HotWheels 2.0-Prefix.pch";
-				INFOPLIST_FILE = "Hot Wheels 2.0/HotWheels 2.0-Info.plist";
+				GCC_PREFIX_HEADER = "HotWheels2/HotWheels 2.0-Prefix.pch";
+				INFOPLIST_FILE = "HotWheels2/HotWheels 2.0-Info.plist";
 				PRODUCT_NAME = "HotWheels 2.0";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -2100,8 +2100,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Hot Wheels 2.0/HotWheels 2.0-Prefix.pch";
-				INFOPLIST_FILE = "Hot Wheels 2.0/HotWheels 2.0-Info.plist";
+				GCC_PREFIX_HEADER = "HotWheels2/HotWheels 2.0-Prefix.pch";
+				INFOPLIST_FILE = "HotWheels2/HotWheels 2.0-Info.plist";
 				PRODUCT_NAME = "HotWheels 2.0";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
