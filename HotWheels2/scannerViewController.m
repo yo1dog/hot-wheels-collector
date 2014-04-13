@@ -6,10 +6,9 @@
 //  Copyright (c) 2014 Mike. All rights reserved.
 //
 
-#import "scannerViewController.h"
-
 #import <AVFoundation/AVFoundation.h>
-
+#import "scannerViewController.h"
+#import "detailsViewController.h"
 #import "HotWheels2API.h"
 #import "UserManager.h"
 #import "CarManager.h"
@@ -46,19 +45,13 @@
 	[super viewDidLoad];
 	
 	self.carManager = [CarManager getSingleton];
-	self.captureSession = NULL;
-	
-	self.ignoreSearchResponse = false;
-	self.isScanning = false;
-	self.isSearching = false;
-	self.alertShown  = false;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	// if we have already created the scanner, and we are not searching, and there is no alert being shown, and we are not already scanning, show the scanning UI
 	// note that we do not actually start scanning until view did appear
-	if (self.captureSession != NULL && !self.isSearching && !self.alertShown && !self.isScanning)
+	if (self.captureSession && !self.isSearching && !self.alertShown && !self.isScanning)
 		[self setUIScanning];
 }
 
@@ -68,7 +61,7 @@
 	self.ignoreSearchResponse = false;
 	
 	// if the scanner has not been created, create it
-	if (self.captureSession == NULL)
+	if (!self.captureSession)
 	{
 		[self createScanner];
 		[self setUIScanning];
@@ -103,7 +96,6 @@
 {
 	self.statusLabel.text = @"";
 	[self.activityView stopAnimating];
-	
 	
 	[self.captureSession startRunning];
 }
@@ -163,7 +155,7 @@
 
 - (void)destroyScanner
 {
-	self.captureSession = NULL;
+	self.captureSession = nil;
 }
 
 
@@ -244,7 +236,7 @@
 			// go to details page
 			dispatch_async(dispatch_get_main_queue(), ^
 			{
-				[self performSegueWithIdentifier:@"scanner_showDetails" sender:self];
+				[self performSegueWithIdentifier:@"scannerToDetails" sender:self];
 			});
 			
 			// don't start scanning again until they come back
@@ -265,9 +257,7 @@
 {
 	detailsViewController *controller = (detailsViewController *)segue.destinationViewController;
 	
-	// set the new car wrapper and register
-	controller.carWrapper     = self.qrCodeCarWrapper;
-	controller.parentViewType = DVPV_SCANNER;
+	// set the car wrapper
+	controller.carWrapper = self.qrCodeCarWrapper;
 }
-
 @end

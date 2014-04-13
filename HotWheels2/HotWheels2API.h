@@ -30,9 +30,15 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler;
 			  owned:(bool)                     owned
   completionHandler:(void (^)(NSError *error)) handler;
 
++ (UIImage *)getImageFromCache:(NSString *) imageCacheKey
+				imageIsDetails:(bool)       imageIsDetails;
+
 + (void) getImage:(NSString *) urlStr
 	imageCacheKey:(NSString *) imageCacheKey
    imageIsDetails:(bool)       imageIsDetails
-completionHandler:(void (^)(NSError* error, UIImage *image)) handler;
+completionHandler:(void (^)(NSError* error, UIImage *image, bool wasCached)) handler;
+
++ (void)addCustomCar:(Car *)                    car
+   completionHandler:(void (^)(NSError *error)) handler;
 
 @end

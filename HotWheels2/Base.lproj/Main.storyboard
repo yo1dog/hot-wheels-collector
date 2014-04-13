@@ -16,88 +16,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" keyboardDismissMode="onDrag" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="VtI-Xr-F1A">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" translatesAutoresizingMaskIntoConstraints="NO" id="XHg-gq-YPd" customClass="UICarGridView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No cars found..." textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PmE-f9-Bv5">
+                                        <rect key="frame" x="20" y="106" width="280" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <inset key="scrollIndicatorInsets" minX="0.0" minY="44" maxX="0.0" maxY="0.0"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="30" minimumInteritemSpacing="6" id="E6j-wx-eRv">
-                                    <size key="itemSize" width="150" height="130"/>
-                                    <size key="headerReferenceSize" width="0.0" height="44"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="7" minY="7" maxX="7" maxY="60"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CarSearchResultCell_Search" id="rxd-Dl-3Bm" customClass="CarCell">
-                                        <rect key="frame" x="7" y="115" width="150" height="130"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="150" height="130"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IFW-NG-zhk">
-                                                    <rect key="frame" x="0.0" y="10" width="150" height="100"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="len-Qe-XbZ">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                                <button opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yjb-ai-hcW" customClass="CarCellBadgeButton">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <accessibility key="accessibilityConfiguration">
-                                                        <accessibilityTraits key="traits" none="YES" button="YES"/>
-                                                        <bool key="isElement" value="NO"/>
-                                                    </accessibility>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <state key="normal">
-                                                        <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="badgeButtonPressed:" destination="CZ4-MO-1fc" eventType="touchUpInside" id="fX6-l5-r29"/>
-                                                    </connections>
-                                                </button>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Woq-9H-Vts">
-                                                    <rect key="frame" x="0.0" y="110" width="150" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="zfB-vA-A5R">
-                                                    <rect key="frame" x="65" y="50" width="20" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </activityIndicatorView>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <connections>
-                                            <outlet property="activityView" destination="zfB-vA-A5R" id="zw3-Ts-q34"/>
-                                            <outlet property="badgeButton" destination="yjb-ai-hcW" id="sIK-gQ-531"/>
-                                            <outlet property="badgeImageView" destination="len-Qe-XbZ" id="HTW-Me-EcX"/>
-                                            <outlet property="imageView" destination="IFW-NG-zhk" id="cPj-L4-ve2"/>
-                                            <outlet property="label" destination="Woq-9H-Vts" id="TVc-VN-1io"/>
-                                            <segue destination="280-7O-SwU" kind="push" identifier="search_showDetails" id="xVG-qN-URe"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SearchHeaderView" id="jdH-C6-Hkk">
-                                    <rect key="frame" x="0.0" y="64" width="320" height="44"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </collectionReusableView>
-                                <connections>
-                                    <outlet property="dataSource" destination="CZ4-MO-1fc" id="XzO-hH-bHL"/>
-                                    <outlet property="delegate" destination="CZ4-MO-1fc" id="Cjg-s4-Scx"/>
-                                </connections>
-                            </collectionView>
+                            </scrollView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h42-f4-hh3">
                                 <rect key="frame" x="0.0" y="64" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="qrCode" translatesAutoresizingMaskIntoConstraints="NO" id="Jy2-7h-6Fp">
-                                        <rect key="frame" x="13" y="10" width="25" height="25"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="qrCode" translatesAutoresizingMaskIntoConstraints="NO" id="Jy2-7h-6Fp">
+                                        <rect key="frame" x="10" y="7" width="31" height="31"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                     </imageView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6XR-hW-Z4d">
                                         <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
@@ -110,7 +50,7 @@
                                             <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <segue destination="43B-Nm-w11" kind="push" identifier="search_scanner" id="Ouo-eP-Zn5"/>
+                                            <segue destination="43B-Nm-w11" kind="push" identifier="searchToScanner" id="Ouo-eP-Zn5"/>
                                         </connections>
                                     </button>
                                     <searchBar contentMode="redraw" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dQO-0j-HjJ">
@@ -164,20 +104,14 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No cars found..." textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PmE-f9-Bv5">
-                                <rect key="frame" x="20" y="150" width="280" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="VtI-Xr-F1A" secondAttribute="bottom" id="3f4-eb-7r3"/>
-                            <constraint firstItem="VtI-Xr-F1A" firstAttribute="leading" secondItem="2VE-Yg-loa" secondAttribute="leading" id="5PQ-jj-F0S"/>
                             <constraint firstAttribute="trailing" secondItem="h42-f4-hh3" secondAttribute="trailing" id="I37-kr-fkk"/>
-                            <constraint firstAttribute="trailing" secondItem="VtI-Xr-F1A" secondAttribute="trailing" id="doG-91-ubQ"/>
-                            <constraint firstItem="VtI-Xr-F1A" firstAttribute="top" secondItem="2VE-Yg-loa" secondAttribute="top" id="hAu-Td-VtA"/>
+                            <constraint firstAttribute="bottom" secondItem="XHg-gq-YPd" secondAttribute="bottom" id="KWj-4g-AM6"/>
+                            <constraint firstItem="XHg-gq-YPd" firstAttribute="top" secondItem="2VE-Yg-loa" secondAttribute="top" id="Qpd-mR-eGN"/>
+                            <constraint firstItem="XHg-gq-YPd" firstAttribute="leading" secondItem="2VE-Yg-loa" secondAttribute="leading" id="bTi-FE-MHW"/>
+                            <constraint firstAttribute="trailing" secondItem="XHg-gq-YPd" secondAttribute="trailing" id="lZT-ec-Ofj"/>
                             <constraint firstItem="h42-f4-hh3" firstAttribute="top" secondItem="Ldy-78-3E1" secondAttribute="bottom" id="yo2-fT-fN5"/>
                             <constraint firstItem="h42-f4-hh3" firstAttribute="leading" secondItem="2VE-Yg-loa" secondAttribute="leading" id="ypU-Bw-eiC"/>
                         </constraints>
@@ -186,9 +120,11 @@
                     <navigationItem key="navigationItem" title="Search" id="o0K-Ay-Nzm"/>
                     <connections>
                         <outlet property="activityView" destination="1Sf-ZJ-ayf" id="Vum-mH-k8H"/>
-                        <outlet property="collectionView" destination="VtI-Xr-F1A" id="ykt-mE-0Eb"/>
+                        <outlet property="carGridView" destination="XHg-gq-YPd" id="j5w-he-inY"/>
                         <outlet property="noSearchResultsLabel" destination="PmE-f9-Bv5" id="XjT-tT-rRY"/>
+                        <outlet property="qrCodeImageView" destination="Jy2-7h-6Fp" id="bZP-k6-YNF"/>
                         <outlet property="searchBar" destination="dQO-0j-HjJ" id="kcm-gW-sKM"/>
+                        <segue destination="280-7O-SwU" kind="push" identifier="searchToDetails" id="XwX-vY-KvY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
@@ -397,6 +333,10 @@
                                             <constraint firstAttribute="width" constant="20" id="VUP-Fa-ACh"/>
                                         </constraints>
                                     </activityIndicatorView>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="YW7-zU-Wps">
+                                        <rect key="frame" x="-15" y="251" width="37" height="37"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="DQZ-L4-4qT" firstAttribute="leading" secondItem="vW3-Z7-Efv" secondAttribute="leading" id="0D0-rj-n1C"/>
@@ -518,6 +458,7 @@
                                         <rect key="frame" x="20" y="494" width="280" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
+                                            <constraint firstAttribute="width" constant="280" id="3QX-z4-uC1"/>
                                             <constraint firstAttribute="height" constant="21" id="jZY-VO-02g"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -535,10 +476,9 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="pod-1k-P6J" firstAttribute="leading" secondItem="hzB-GS-W8H" secondAttribute="leading" constant="20" id="Ilq-hu-4h6"/>
                                     <constraint firstAttribute="centerY" secondItem="dJQ-he-veg" secondAttribute="centerY" id="YIW-dj-cZU"/>
                                     <constraint firstAttribute="bottom" secondItem="pod-1k-P6J" secondAttribute="bottom" constant="53" id="na6-ml-IKQ"/>
-                                    <constraint firstAttribute="trailing" secondItem="pod-1k-P6J" secondAttribute="trailing" constant="20" id="tuO-Rt-5qp"/>
+                                    <constraint firstAttribute="centerX" secondItem="pod-1k-P6J" secondAttribute="centerX" id="obo-5y-sP4"/>
                                     <constraint firstAttribute="centerX" secondItem="dJQ-he-veg" secondAttribute="centerX" id="vR6-ZQ-eLB"/>
                                 </constraints>
                             </view>
@@ -560,7 +500,7 @@
                         <outlet property="activityView" destination="dJQ-he-veg" id="8qh-xL-5IG"/>
                         <outlet property="previewView" destination="hzB-GS-W8H" id="4zQ-zp-QZl"/>
                         <outlet property="statusLabel" destination="pod-1k-P6J" id="ug7-aa-Na9"/>
-                        <segue destination="280-7O-SwU" kind="push" identifier="scanner_showDetails" id="tCe-cz-g9f"/>
+                        <segue destination="280-7O-SwU" kind="push" identifier="scannerToDetails" id="tCe-cz-g9f"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WAl-hx-a3R" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -595,103 +535,31 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" keyboardDismissMode="onDrag" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="8Se-AS-kjR">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UrX-9Y-Sk1" customClass="UICarGridView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No cars in your collection..." textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gVW-yg-b73">
+                                        <rect key="frame" x="20" y="62" width="280" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="30" minimumInteritemSpacing="6" id="cdp-90-EFd">
-                                    <size key="itemSize" width="150" height="130"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="7" minY="7" maxX="7" maxY="60"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CarSearchResultCell_Collection" id="bqE-FH-wdv" customClass="CarCell">
-                                        <rect key="frame" x="7" y="71" width="150" height="130"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="150" height="130"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TP3-QW-sVC">
-                                                    <rect key="frame" x="0.0" y="10" width="150" height="100"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="clipsToBounds" value="YES"/>
-                                                    </userDefinedRuntimeAttributes>
-                                                </imageView>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="vIN-T4-AeG">
-                                                    <rect key="frame" x="65" y="50" width="20" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </activityIndicatorView>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VUU-z9-94Y">
-                                                    <rect key="frame" x="0.0" y="110" width="145" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J8e-g5-mok">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                                <button opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tzm-HH-w1U" customClass="CarCellBadgeButton">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <accessibility key="accessibilityConfiguration">
-                                                        <accessibilityTraits key="traits" none="YES" button="YES"/>
-                                                        <bool key="isElement" value="NO"/>
-                                                    </accessibility>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <state key="normal">
-                                                        <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="badgeButtonPressed:" destination="QUy-BD-bpt" eventType="touchUpInside" id="eGp-7Q-Iyd"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <connections>
-                                            <outlet property="activityView" destination="vIN-T4-AeG" id="DiP-Dm-m4H"/>
-                                            <outlet property="badgeButton" destination="tzm-HH-w1U" id="bfE-nv-Y2Q"/>
-                                            <outlet property="badgeImageView" destination="J8e-g5-mok" id="f9A-YE-NJt"/>
-                                            <outlet property="imageView" destination="TP3-QW-sVC" id="zq5-8X-zrz"/>
-                                            <outlet property="label" destination="VUU-z9-94Y" id="2m1-4U-Lgi"/>
-                                            <segue destination="280-7O-SwU" kind="push" identifier="collection_showDetails" id="jMj-zr-XeA"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="QUy-BD-bpt" id="33A-Ez-3Mk"/>
-                                    <outlet property="delegate" destination="QUy-BD-bpt" id="s9u-x7-Fzw"/>
-                                </connections>
-                            </collectionView>
+                            </scrollView>
                             <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iKy-Ug-hCE">
                                 <rect key="frame" x="0.0" y="0.0" width="1" height="1"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No cars in your collection..." textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gVW-yg-b73">
-                                <rect key="frame" x="20" y="106" width="280" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="rKT-q9-NND"/>
-                                    <constraint firstAttribute="width" constant="280" id="u49-2W-Ce0"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="8Se-AS-kjR" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" id="Rsp-3g-b5X"/>
-                            <constraint firstAttribute="trailing" secondItem="8Se-AS-kjR" secondAttribute="trailing" id="jBf-fk-Vky"/>
-                            <constraint firstItem="gVW-yg-b73" firstAttribute="top" secondItem="VJi-Qa-RTF" secondAttribute="bottom" constant="42" id="m5p-zl-s3D"/>
-                            <constraint firstAttribute="centerX" secondItem="gVW-yg-b73" secondAttribute="centerX" id="nb0-k7-TQ8"/>
-                            <constraint firstAttribute="bottom" secondItem="8Se-AS-kjR" secondAttribute="bottom" id="tRh-ay-deJ"/>
-                            <constraint firstItem="8Se-AS-kjR" firstAttribute="top" secondItem="gMD-aP-Fq6" secondAttribute="top" id="y7q-wl-jYi"/>
+                            <constraint firstItem="UrX-9Y-Sk1" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" id="P4t-kj-1dV"/>
+                            <constraint firstAttribute="trailing" secondItem="UrX-9Y-Sk1" secondAttribute="trailing" id="kIG-AR-mbI"/>
+                            <constraint firstAttribute="bottom" secondItem="UrX-9Y-Sk1" secondAttribute="bottom" id="mts-aJ-s9M"/>
+                            <constraint firstItem="UrX-9Y-Sk1" firstAttribute="top" secondItem="gMD-aP-Fq6" secondAttribute="top" id="ons-ds-caP"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Collection" image="collection" id="Z7h-1E-pvt"/>
@@ -699,14 +567,15 @@
                         <barButtonItem key="backBarButtonItem" title="Collection" id="WGF-OA-pQB"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="d0O-EV-Tmd">
                             <connections>
-                                <action selector="refreshButtonPressed:" destination="QUy-BD-bpt" id="1WO-vO-ifk"/>
+                                <action selector="refreshButtonPressed:" destination="QUy-BD-bpt" id="Cs8-hD-6E2"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="collectionView" destination="8Se-AS-kjR" id="fqX-aF-983"/>
-                        <outlet property="emptyCollectionLabel" destination="gVW-yg-b73" id="Fkj-qq-C6u"/>
-                        <outlet property="refreshButton" destination="d0O-EV-Tmd" id="fKq-OQ-Q7R"/>
+                        <outlet property="carGridView" destination="UrX-9Y-Sk1" id="agN-KR-zEy"/>
+                        <outlet property="emptyCollectionLabel" destination="gVW-yg-b73" id="srq-KR-gEj"/>
+                        <outlet property="refreshButton" destination="d0O-EV-Tmd" id="neL-HW-jbY"/>
+                        <segue destination="280-7O-SwU" kind="push" identifier="collectionToDetails" id="OpR-hc-Wgx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
@@ -758,118 +627,27 @@
                         <viewControllerLayoutGuide type="top" id="ngu-TO-do4"/>
                         <viewControllerLayoutGuide type="bottom" id="Fut-fb-gLA"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="xjK-jG-gNh">
+                    <scrollView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" id="tst-0b-c3M" customClass="UICarGridView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
-                            <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" keyboardDismissMode="onDrag" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="n5W-bk-MS0">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="30" minimumInteritemSpacing="6" id="4OW-9v-tQp">
-                                    <size key="itemSize" width="150" height="130"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="7" minY="7" maxX="7" maxY="60"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CarSearchResultCell_CollectionRemovals" id="f5D-H4-BS5" customClass="CarCell">
-                                        <rect key="frame" x="7" y="71" width="150" height="130"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="150" height="130"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jVd-fT-R7W">
-                                                    <rect key="frame" x="0.0" y="10" width="150" height="100"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="VeL-3b-3RI">
-                                                    <rect key="frame" x="65" y="50" width="20" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </activityIndicatorView>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IyD-VZ-aZm">
-                                                    <rect key="frame" x="0.0" y="110" width="145" height="20"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lk4-Sl-WJd">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                                <button opaque="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0dS-ks-cPm" customClass="CarCellBadgeButton">
-                                                    <rect key="frame" x="102" y="0.0" width="48" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <accessibility key="accessibilityConfiguration">
-                                                        <accessibilityTraits key="traits" none="YES" button="YES"/>
-                                                        <bool key="isElement" value="NO"/>
-                                                    </accessibility>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <state key="normal">
-                                                        <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="badgeButtonPressed:" destination="bEJ-dv-GKz" eventType="touchUpInside" id="Pny-Td-bVt"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <connections>
-                                            <outlet property="activityView" destination="VeL-3b-3RI" id="Zb7-px-Obp"/>
-                                            <outlet property="badgeButton" destination="0dS-ks-cPm" id="FXq-T8-GI0"/>
-                                            <outlet property="badgeImageView" destination="Lk4-Sl-WJd" id="rl1-bg-iaf"/>
-                                            <outlet property="imageView" destination="jVd-fT-R7W" id="iQF-ec-zoP"/>
-                                            <outlet property="label" destination="IyD-VZ-aZm" id="BZm-wg-JKV"/>
-                                            <segue destination="280-7O-SwU" kind="push" identifier="collectionRemovals_showDetails" id="2gv-wy-55S"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="bEJ-dv-GKz" id="ndB-Pn-I10"/>
-                                    <outlet property="delegate" destination="bEJ-dv-GKz" id="mfj-iE-cOF"/>
-                                </connections>
-                            </collectionView>
-                            <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5FL-x9-DP7">
-                                <rect key="frame" x="0.0" y="0.0" width="1" height="1"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No cars have been removed from your collection..." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="ptP-75-A90">
-                                <rect key="frame" x="20" y="106" width="280" height="45"/>
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No cars removed..." textAlignment="center" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eaz-Pk-1dh">
+                                <rect key="frame" x="20" y="62" width="280" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="280" id="Mmz-BL-2Id"/>
-                                    <constraint firstAttribute="height" constant="45" id="wGJ-iD-Nai"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="n5W-bk-MS0" secondAttribute="trailing" id="5hD-je-qsu"/>
-                            <constraint firstItem="n5W-bk-MS0" firstAttribute="top" secondItem="xjK-jG-gNh" secondAttribute="top" id="8g5-ll-NXR"/>
-                            <constraint firstItem="ptP-75-A90" firstAttribute="top" secondItem="ngu-TO-do4" secondAttribute="bottom" constant="42" id="Ara-Qw-fOP"/>
-                            <constraint firstAttribute="centerX" secondItem="ptP-75-A90" secondAttribute="centerX" id="QTd-o4-ayD"/>
-                            <constraint firstAttribute="bottom" secondItem="n5W-bk-MS0" secondAttribute="bottom" id="qPe-wk-xkq"/>
-                            <constraint firstItem="n5W-bk-MS0" firstAttribute="leading" secondItem="xjK-jG-gNh" secondAttribute="leading" id="uWN-ha-8Ia"/>
-                        </constraints>
-                    </view>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                    </scrollView>
                     <tabBarItem key="tabBarItem" title="Removed" image="trash" id="ebP-mw-A2S"/>
                     <navigationItem key="navigationItem" title="Removed" id="Dx2-KY-DL3">
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="CKA-Iz-wSM">
-                            <connections>
-                                <action selector="refreshButtonPressed:" destination="bEJ-dv-GKz" id="fA7-Y6-sni"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="CKA-Iz-wSM"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="collectionView" destination="n5W-bk-MS0" id="scn-UK-qYX"/>
-                        <outlet property="emptyCollectionRemovalsLabel" destination="ptP-75-A90" id="jho-rH-jy2"/>
-                        <outlet property="refreshButton" destination="CKA-Iz-wSM" id="BUU-af-7Ce"/>
+                        <outlet property="carGridView" destination="tst-0b-c3M" id="FhO-J5-50e"/>
+                        <outlet property="emptyCollectionRemovalsLabel" destination="eaz-Pk-1dh" id="wuh-9F-VRq"/>
+                        <outlet property="refreshButton" destination="CKA-Iz-wSM" id="MJV-Uu-f3D"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Q1-2R-YSO" sceneMemberID="firstResponder"/>
@@ -1235,6 +1013,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="q6S-GX-5RC"/>
+        <segue reference="XwX-vY-KvY"/>
     </inferredMetricsTieBreakers>
 </document>

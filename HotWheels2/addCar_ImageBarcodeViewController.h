@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "Car.h"
+#import "addCar_InfoViewController.h"
 
 @interface addCar_ImageBarcodeViewController : UIViewController
 @property (nonatomic, weak) Car *car;
+@property(nonatomic, weak) addCar_InfoViewController *addCar_InfoViewController;
 
 - (void)barcodeRead:(NSString *)barCodeString;
 @end

@@ -7,14 +7,15 @@
 //
 
 #import "detailsViewController.h"
-
+#import "CarWrapperListenerDelegate.h"
+#import "CarWrapperUpdatedEvent.h"
+#import "CarManager.h"
 #import "HotWheels2API.h"
 #import "ImageBank.h"
 #import "UserManager.h"
-#import "CarManager.h"
 #import "ZXingObjC.h"
 
-@interface detailsViewController ()
+@interface detailsViewController () <CarWrapperListenerDelegate>
 @property(nonatomic, weak) IBOutlet UIButton *badgeButton;
 
 @property(nonatomic, weak) IBOutlet UIScrollView *scrollView;
@@ -42,6 +43,8 @@
 @property(nonatomic, strong) UIImage      *barcodeUIImage;
 
 @property(nonatomic, weak) CarManager *carManager;
+
+@property bool addCarRequesting;
 @end
 
 
@@ -58,26 +61,13 @@
 {
 	[super viewDidLoad];
 	
-	// register
+	self.carManager = [CarManager getSingleton];
+	
+	// register self as listener
 	if (self.carWrapper)
 	{
-		self.carManager = [CarManager getSingleton];
-		
-		switch (self.parentViewType)
-		{
-			case DVPV_SEARCH:
-				[self.carWrapper registerSearchDetailsViewController:self];
-				break;
-			case DVPV_COLLECTION:
-				[self.carWrapper registerCollectionDetailsViewController:self];
-				break;
-			case DVPV_COLLECTION_REMOVALS:
-				[self.carWrapper registerCollectionRemovalsDetailsViewController:self];
-				break;
-			case DVPV_SCANNER:
-				[self.carWrapper registerScannerDetailsViewController:self];
-				break;
-		}
+		self.car = self.carWrapper.car;
+		[self.carWrapper registerListenerDelegate:self];
 	}
 	
 	// setup UI
@@ -86,31 +76,13 @@
 
 - (void)viewDidLayoutSubviews
 {
-	self.scrollView.contentSize = CGSizeMake(320, self.car.barcode ? 600 : 452);
+	self.scrollView.contentSize = CGSizeMake(320, self.car.barcodeData ? 600 : 452);
 }
 
 - (void)dealloc
 {
 	if (self.carWrapper)
-	{
-		switch (self.parentViewType)
-		{
-			case DVPV_SEARCH:
-				[self.carWrapper unregisterSearchDetailsViewController];
-				break;
-			case DVPV_COLLECTION:
-				[self.carWrapper unregisterCollectionDetailsViewController];
-				break;
-			case DVPV_COLLECTION_REMOVALS:
-				[self.carWrapper unregisterCollectionRemovalsDetailsViewController];
-				break;
-			case DVPV_SCANNER:
-				[self.carWrapper unregisterScannerDetailsViewController];
-				break;
-		}
-		
-		[self.carManager checkForRemoval:self.carWrapper];
-	}
+		[self.carWrapper unregisterListenerDelegate:self];
 }
 
 
@@ -118,18 +90,76 @@
 
 - (IBAction)badgeButtonPressed:(id) sender
 {
+	if (!self.carWrapper)
+		return;
+	
 	// make request
-	[self.carWrapper requestSetCarOwned:[UserManager getUserID] owned:!self.carWrapper.car.owned];
+	if (![self.carWrapper getSetCarOwnedInProgress])
+		[self.carWrapper setCarOwned:[UserManager getUserID] owned:!self.carWrapper.car.owned];
 }
+
+
 - (IBAction)addButtonPressed:(id) sender
 {
-	NSLog(@"+ Pressed");
+	if (self.addCarRequesting)
+		return;
+	
+	self.addCarRequesting = true;
+	
+	// show loading overlay
+	UIView *loadingView = [self showLoadingOveraly];
+	
+	[HotWheels2API addCustomCar:self.car completionHandler:^(NSError *error) {
+		dispatch_async(dispatch_get_main_queue(), ^
+		{
+			self.addCarRequesting = false;
+			[loadingView removeFromSuperview];
+			
+			if (error)
+				return;
+			
+			[self.navigationController popToRootViewControllerAnimated:true];
+			[self.addCar_InfoViewController reset];
+		});
+	}];
+}
+
+
+- (UIView *)showLoadingOveraly
+{
+	UIView *superview = self.view.window.rootViewController.view;
+	
+	UIView *loadingView = [[UIView alloc] initWithFrame:superview.bounds];
+	loadingView.backgroundColor = [UIColor clearColor];
+	
+	UIView *overlay = [[UIView alloc] initWithFrame:loadingView.bounds];
+	overlay.backgroundColor = [UIColor blackColor];
+	overlay.opaque = false;
+	overlay.alpha = 0.5;
+	
+	UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithFrame:
+											 CGRectMake(loadingView.frame.size.width  * 0.5f - 40,
+														loadingView.frame.size.height * 0.5f - 40,
+														80, 80)];
+	activityView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+	activityView.backgroundColor = [UIColor blackColor];
+	activityView.layer.cornerRadius = 10;
+	activityView.layer.masksToBounds = true;
+	
+	[activityView startAnimating];
+	
+	
+	[loadingView addSubview:overlay];
+	[loadingView addSubview:activityView];
+	[superview addSubview:loadingView];
+	
+	return loadingView;
 }
 
 
 
 
-- (void)carUpdated:(CarWrapper *) carWrapper
+- (void)carWrapperUpdated:(CarWrapper *) carWrapper event:(CarWrapperUpdatedEvent)event
 {
 	dispatch_async(dispatch_get_main_queue(), ^
 	{
@@ -141,9 +171,6 @@
 
 - (void)setupUI
 {
-	if (self.carWrapper)
-		self.car = self.carWrapper.car;
-	
 	// set the static UI elements
 	self.nameLabel     .text = self.car.name;
 	self.segmentLabel  .text = self.car.segment;
@@ -151,22 +178,22 @@
 	self.makeLabel     .text = self.car.make;
 	self.colorLabel    .text = self.car.color;
 	self.styleLabel    .text = self.car.style;
-	self.toyNumberLabel.text = self.car.toyNumber;
+	self.toyNumberLabel.text = self.car.toyNumber ?: @"";
 	
-	if (self.car.barcode)
+	if (self.car.barcodeData)
 	{
 		self.barcodeNumbersLabel.text = [NSString stringWithFormat:@"%@ %@ %@ %@",
-										 [self.car.barcode substringWithRange:NSMakeRange(0,  1)],
-										 [self.car.barcode substringWithRange:NSMakeRange(1,  5)],
-										 [self.car.barcode substringWithRange:NSMakeRange(6,  5)],
-										 [self.car.barcode substringWithRange:NSMakeRange(11, 1)]];
+										 [self.car.barcodeData substringWithRange:NSMakeRange(0,  1)],
+										 [self.car.barcodeData substringWithRange:NSMakeRange(1,  5)],
+										 [self.car.barcodeData substringWithRange:NSMakeRange(6,  5)],
+										 [self.car.barcodeData substringWithRange:NSMakeRange(11, 1)]];
 		
 		
 		if (!self.zxWriter)
 			self.zxWriter = [[ZXUPCAWriter alloc] init];
 		
 		NSError *error;
-		self.barcodeZXResult = [self.zxWriter encode:self.car.barcode
+		self.barcodeZXResult = [self.zxWriter encode:self.car.barcodeData
 											  format:kBarcodeFormatUPCA
 											   width:self.barcodeImageView.frame.size.width
 											  height:self.barcodeImageView.frame.size.height
@@ -205,16 +232,19 @@
 
 - (void)updateUI
 {
-	// update the dynmiac UI elements
+	if (!self.carWrapper)
+		return;
+	
+	// update the dynamic UI elements
 	self.imageView.image     = self.carWrapper.car.detailImage;
-	self.badgeButton.alpha   = self.carWrapper.carSetOwnedRequesting ? 0.5f : 1.0f;
-	self.badgeButton.enabled = !self.carWrapper.carSetOwnedRequesting;
+	self.badgeButton.alpha   = [self.carWrapper getSetCarOwnedInProgress] ? 0.5f : 1.0f;
+	self.badgeButton.enabled = ![self.carWrapper getSetCarOwnedInProgress];
 	
 	[self.badgeButton setImage:(self.carWrapper.car.owned ? [ImageBank getBadgeOwned] : [ImageBank getBadgeUnowned]) forState:UIControlStateNormal];
 	
 	
 	// if we don't have a detail image...
-	if (self.carWrapper.car.detailImage == NULL)
+	if (!self.carWrapper.car.detailImage)
 	{
 		// download the detail image
 		[self.carWrapper downloadCarDetailImage];

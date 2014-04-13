@@ -73,7 +73,7 @@
 	self.car.make                = [self.makeTextField              .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.color               = [self.colorTextField             .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.style               = [self.styleTextField             .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	self.car.toyNumber           = [self.toyNumberTextField         .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	self.car.customToyNumber     = [self.toyNumberTextField         .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.distinguishingNotes = [self.distinguishingNotesTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 }
 
@@ -187,5 +187,6 @@
 {
 	addCar_ImageBarcodeViewController *controller = (addCar_ImageBarcodeViewController *)segue.destinationViewController;
 	controller.car = self.car;
+	controller.addCar_InfoViewController = self;
 }
 @end

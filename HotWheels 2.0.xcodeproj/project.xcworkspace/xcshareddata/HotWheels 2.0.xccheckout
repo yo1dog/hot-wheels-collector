@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>FA6CA6C5-D27B-4B28-A618-1C5C54556AA9</string>
+	<key>IDESourceControlProjectName</key>
+	<string>HotWheels 2.0</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>EF80570B-C999-45D3-923A-CB6E4C809BF0</key>
+		<string>ssh://bitbucket.org/yo1dog/hotwheels2.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>HotWheels 2.0.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>EF80570B-C999-45D3-923A-CB6E4C809BF0</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://bitbucket.org/yo1dog/hotwheels2.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EF80570B-C999-45D3-923A-CB6E4C809BF0</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EF80570B-C999-45D3-923A-CB6E4C809BF0</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Hot Wheels 2</string>
+		</dict>
+	</array>
+</dict>
+</plist>

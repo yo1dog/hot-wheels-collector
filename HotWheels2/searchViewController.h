@@ -7,10 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CarWrapper.h"
-
-@class CarWrapper;
 
 @interface searchViewController : UIViewController
-- (void)carUpdated:(CarWrapper *) carWrapper;
 @end

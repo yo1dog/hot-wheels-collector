@@ -7,203 +7,177 @@
 //
 
 #import "CarWrapper.h"
+#import "CarWrapperListenerDelegate.h"
+#import "CarWrapperUpdatedEvent.h"
+#import "CarWrapperListener.h"
+#import "CarManager.h"
 #import "HotWheels2API.h"
 #import "ImageBank.h"
 
+@interface CarWrapper ()
+@property bool downloadCarIconImageInProgress;
+@property bool downloadCarDetailImageInProgress;
+@property bool setCarOwnedInProgress;
+
+@property (nonatomic, strong) NSMutableArray *listeners;
+@end
+
+
 @implementation CarWrapper
+
+- (bool)getDownloadCarIconImageInProgress   { return self.downloadCarIconImageInProgress; }
+- (bool)getDownloadCarDetailImageInProgress { return self.downloadCarDetailImageInProgress; }
+- (bool)getSetCarOwnedInProgress            { return self.setCarOwnedInProgress; }
+
 
 - (id)init:(Car *) car
 {
+	self = [super init];
+	
 	self.car = car;
-	
-	self.searchViewController             = NULL;
-	self.collectionViewController         = NULL;
-	self.collectionRemovalsViewController = NULL;
-	
-	self.searchDetailsViewController             = NULL;
-	self.collectionDetailsViewController         = NULL;
-	self.collectionRemovalsDetailsViewController = NULL;
-	self.scannerDetailsViewController            = NULL;
-	
-	self.searchIndexPath     = NULL;
-	self.collectionIndexPath = NULL;
-	
-	self.carImageRequesting       = false;
-	self.carDetailImageRequesting = false;
-	self.carSetOwnedRequesting    = false;
+	self.listeners = [[NSMutableArray alloc] init];
 	
 	return self;
 }
 
-
-
-
-- (void)registerSearchViewController:(searchViewController *) viewController
-						   indexPath:(NSIndexPath *) indexPath
+- (void)update:(Car *) car
 {
-	self.searchViewController = viewController;
-	self.searchIndexPath      = indexPath;
-}
-
-- (void)registerCollectionViewController:(collectionViewController *) viewController
-							   indexPath:(NSIndexPath *) indexPath
-{
-	self.collectionViewController = viewController;
-	self.collectionIndexPath      = indexPath;
-}
-
-- (void)registerCollectionRemovalsViewController:(collectionRemovalsViewController *) viewController
-							   indexPath:(NSIndexPath *) indexPath
-{
-	self.collectionRemovalsViewController = viewController;
-	self.collectionRemovalsIndexPath      = indexPath;
-}
-
-
-- (void)registerSearchDetailsViewController:(detailsViewController *) viewController
-{
-	self.searchDetailsViewController = viewController;
-}
-
-- (void)registerCollectionDetailsViewController:(detailsViewController *) viewController
-{
-	self.collectionDetailsViewController = viewController;
-}
-
-- (void)registerCollectionRemovalsDetailsViewController:(detailsViewController *) viewController
-{
-	self.collectionRemovalsDetailsViewController = viewController;
-}
-
-- (void)registerScannerDetailsViewController:(detailsViewController *) viewController
-{
-	self.scannerDetailsViewController = viewController;
-}
-
-
-- (void)unregisterSearchViewController
-{
-	self.searchViewController = NULL;
-	self.searchIndexPath      = NULL;
-}
-
-- (void)unregisterCollectionViewController
-{
-	self.collectionViewController = NULL;
-	self.collectionIndexPath      = NULL;
-}
-
-- (void)unregisterCollectionRemovalsViewController
-{
-	self.collectionRemovalsViewController = NULL;
-	self.collectionRemovalsIndexPath      = NULL;
-}
-
-
-- (void)unregisterSearchDetailsViewController
-{
-	self.searchDetailsViewController = NULL;
-}
-
-- (void)unregisterCollectionDetailsViewController
-{
-	self.collectionDetailsViewController = NULL;
-}
-
-- (void)unregisterCollectionRemovalsDetailsViewController
-{
-	self.collectionRemovalsDetailsViewController = NULL;
-}
-
-- (void)unregisterScannerDetailsViewController
-{
-	self.scannerDetailsViewController = NULL;
+	
+	if (!self.getSetCarOwnedInProgress)
+	{
+		if (self.car.owned != car.owned)
+		{
+			self.car.owned = car.owned;
+			[self notifyListeners];
+		}
+	}
 }
 
 
 
-
-- (void)downloadCarImage
+- (void)registerListenerDelegate:(id<CarWrapperListenerDelegate>) listenerDelegate
 {
-	if (self.carImageRequesting)
+	for (CarWrapperListener *listener in self.listeners)
+	{
+		if (listener.listenerDelegate == listenerDelegate)
+			return;
+	}
+	
+	[self.listeners addObject:[[CarWrapperListener alloc] initWithListenerDelegate:listenerDelegate]];
+}
+
+- (void)unregisterListenerDelegate:(id<CarWrapperListenerDelegate>) listenerDelegate
+{
+	for (CarWrapperListener *listener in self.listeners)
+	{
+		if (listener.listenerDelegate == listenerDelegate)
+		{
+			[self.listeners removeObject:listener];
+			break;
+		}
+	}
+	
+	if (self.listeners.count == 0)
+		[[CarManager getSingleton] releaseCarWrapper:self];
+}
+
+
+
+- (void)downloadCarIconImage
+{
+	// dont do anything if we are already downloading
+	if (self.downloadCarIconImageInProgress)
 		return;
 	
-	self.carImageRequesting = true;
-	[self carUpdated];
+	// dont download if we dont have a URL
+	if (!self.car.iconImageURL)
+		return;
 	
+	self.downloadCarIconImageInProgress = true;
+	
+	// tell the listeners we are now downlaoding the image
+	[self notifyListeners];
+	
+	// get the image from HW2 API
 	[HotWheels2API getImage:self.car.iconImageURL
 			  imageCacheKey:self.car._id
 			 imageIsDetails:false
-		  completionHandler:^(NSError *error, UIImage *image)
+		  completionHandler:^(NSError *error, UIImage *image, bool wasCached)
 	{
-		self.carImageRequesting = false;
+		self.downloadCarIconImageInProgress = false;
 		
 		self.car.iconImage = error ? [ImageBank getCarError] : image;
 		
-		[self carUpdated];
+		// tell the listerners we are done downloading the image
+		[self notifyListeners:CWUE_DoneDownloadingIconImage];
 	}];
 }
 
+
 - (void)downloadCarDetailImage
 {
-	if (self.carDetailImageRequesting)
+	// dont do anything if we are already downloading
+	if (self.downloadCarDetailImageInProgress)
 		return;
 	
-	self.carDetailImageRequesting = true;
-	[self carUpdated];
+	// dont download if we dont have a URL
+	if (self.car.detailImageURL == NULL)
+		return;
 	
+	self.downloadCarDetailImageInProgress = true;
+	
+	// tell the listeners we are now downloading the image
+	[self notifyListeners];
+	
+	// get the image from HW2 API
 	[HotWheels2API getImage:self.car.detailImageURL
 			  imageCacheKey:self.car._id
 			 imageIsDetails:true
-		  completionHandler:^(NSError *error, UIImage *image)
+		  completionHandler:^(NSError *error, UIImage *image, bool wasCached)
 	 {
-		 self.carDetailImageRequesting = false;
+		 self.downloadCarDetailImageInProgress = false;
 		 
 		 self.car.detailImage = error ? [ImageBank getCarError] : image;
 		 
-		 [self carUpdated];
+		 // tell the listerners we are done downloading the image
+		 [self notifyListeners:CWUE_DoneDownloadingDetailImage];
 	 }];
 }
 
-- (void)requestSetCarOwned:(NSString *) userID
-				     owned:(bool)       owned
+
+- (void)setCarOwned:(NSString *) userID owned:(bool) owned
 {
-	if (self.carSetOwnedRequesting)
+	// dont do anything if we are already setting the ownership
+	if (self.setCarOwnedInProgress)
 		return;
 	
-	self.carSetOwnedRequesting = true;
-	[self carUpdated];
+	self.setCarOwnedInProgress = true;
 	
+	// tell the listeners we are now setting the ownership
+	[self notifyListeners];
+	
+	// set the ownership with HW2 API
 	[HotWheels2API setCarOwned:userID carID:self.car._id owned:owned completionHandler:^(NSError *error)
 	{
-		self.carSetOwnedRequesting = false;
+		self.setCarOwnedInProgress = false;
 		
 		if (!error)
 			self.car.owned = owned;
 		
-		[self carUpdated];
+		// tell the listerners we are done setting the ownership
+		[self notifyListeners];
 	}];
 }
 
 
 
-
-- (void)carUpdated
+- (void)notifyListeners
 {
-	if (self.searchViewController)
-		[self.searchViewController carUpdated:self];
-	if (self.collectionViewController)
-		[self.collectionViewController carUpdated:self];
-	if (self.collectionRemovalsViewController)
-		[self.collectionRemovalsViewController carUpdated:self];
-	
-	if (self.searchDetailsViewController)
-		[self.searchDetailsViewController carUpdated:self];
-	if (self.collectionDetailsViewController)
-		[self.collectionDetailsViewController carUpdated:self];
-	if (self.collectionRemovalsDetailsViewController)
-		[self.collectionRemovalsDetailsViewController carUpdated:self];
-	if (self.scannerDetailsViewController)
-		[self.scannerDetailsViewController carUpdated:self];
+	[self notifyListeners: CWUE_Other];
+}
+- (void)notifyListeners: (CarWrapperUpdatedEvent) event
+{
+	for (CarWrapperListener *listener in self.listeners)
+		[listener notify:self withEvent:event];
 }
 @end

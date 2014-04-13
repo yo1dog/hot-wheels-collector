@@ -8,22 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "CarWrapper.h"
-
-@class CarWrapper;
-
-typedef enum detailViewParentViewTypes
-{
-	DVPV_SEARCH,
-	DVPV_COLLECTION,
-	DVPV_COLLECTION_REMOVALS,
-	DVPV_SCANNER
-} DetailViewParentViewType;
+#import "addCar_InfoViewController.h"
 
 @interface detailsViewController : UIViewController
 @property(nonatomic, strong) CarWrapper *carWrapper;
 @property(nonatomic, strong) Car        *car;
 
-@property DetailViewParentViewType parentViewType;
-
-- (void)carUpdated:(CarWrapper *) carWrapper;
+@property(nonatomic, weak) addCar_InfoViewController *addCar_InfoViewController;
 @end

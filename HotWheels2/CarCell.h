@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Car.h"
-#import "CarCellBadgeButton.h"
+#import "CarWrapper.h"
+#import "CarWrapperListener.h"
 
-@interface CarCell : UICollectionViewCell
-@property (nonatomic, weak) IBOutlet UILabel                 *label;
-@property (nonatomic, weak) IBOutlet UIImageView             *imageView;
-@property (nonatomic, weak) IBOutlet UIImageView             *badgeImageView;
-@property (nonatomic, weak) IBOutlet CarCellBadgeButton      *badgeButton;
-@property (nonatomic, weak) IBOutlet UIActivityIndicatorView *activityView;
+@interface CarCell : UIButton
+- (id)initWithFrame:(CGRect)frame andCarWrapper:(CarWrapper *) carWrapper;
+
+- (void)showForFirstTime;
+- (CarWrapper *)getCarWrapper;
 @end

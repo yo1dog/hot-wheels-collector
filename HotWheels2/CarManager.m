@@ -15,7 +15,7 @@
 
 @implementation CarManager
 
-static CarManager *carManager = NULL;
+static CarManager *carManager;
 + (CarManager *)getSingleton
 {
 	if (!carManager)
@@ -29,7 +29,10 @@ static CarManager *carManager = NULL;
 
 - (id)init
 {
+	self = [super init];
+	
 	self.carWrappers = [[NSMutableDictionary alloc] init];
+	
 	return self;
 }
 
@@ -46,34 +49,17 @@ static CarManager *carManager = NULL;
 	}
 	else
 	{
-		// if we are not in the middle of an update, set owned
-		if (!carWrapper.carSetOwnedRequesting)
-		{
-			if (carWrapper.car.owned != car.owned)
-			{
-				carWrapper.car.owned = car.owned;
-				[carWrapper carUpdated];
-			}
-		}
+		// update the local copy with the one we got from HW2
+		[carWrapper update:car];
 	}
 	
 	return carWrapper;
 }
 
 
-- (void)checkForRemoval:(CarWrapper *) carWrapper
+- (void)releaseCarWrapper:(CarWrapper *) carWrapper
 {
-	if (!carWrapper.searchViewController &&
-		!carWrapper.collectionViewController &&
-		!carWrapper.collectionRemovalsViewController &&
-		
-		!carWrapper.searchDetailsViewController &&
-		!carWrapper.collectionDetailsViewController &&
-		!carWrapper.collectionRemovalsDetailsViewController &&
-		!carWrapper.scannerDetailsViewController)
-	{
-		[self.carWrappers removeObjectForKey:carWrapper.car._id];
-	}
+	[self.carWrappers removeObjectForKey:carWrapper.car._id];
 }
 
 @end

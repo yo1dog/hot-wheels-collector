@@ -14,7 +14,7 @@ static NSString *BASE_URL = @"http://hotwheels2.awesomebox.net/api/";
 
 
 
-//static NSMutableDictionary *searchCahce = NULL;
+//static NSMutableDictionary *searchCahce;
 
 + (void)   search:(NSString *)                                     query
 		   userID:(NSString *)                                     userID
@@ -22,12 +22,12 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 {
 	/*NSString *searchCacheKey = [query stringByAppendingString:(userID? : @"NULL")];
 	
-	if (searchCahce == NULL)
+	if (!searchCahce)
 		searchCahce = [[NSMutableDictionary alloc] init];
 	
 	NSMutableArray *cachedSearch = [searchCahce valueForKey:searchCacheKey];
 	if (cachedSearch)
-		return handler(NULL, cachedSearch);*/
+		return handler(nill, cachedSearch);*/
 	
 	
 	NSString *urlStr = [NSString stringWithFormat:@"%@search.php?query=%@", BASE_URL, [HotWheels2API encodeURIComponent:query]];
@@ -71,26 +71,26 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 	if (userID)
 		urlStr = [urlStr stringByAppendingFormat:@"&userID=%@", [HotWheels2API encodeURIComponent:userID]];
 	
-	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:NULL completionHandler:^(NSData *data, NSError *error)
+	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:nil completionHandler:^(NSData *data, NSError *error)
 	{
 		if (error)
-			return handler(error, NULL);
+			return handler(error, nil);
 		
 		NSObject *jsonObject = [HotWheels2API parseJSON:data];
 		
 		if ([jsonObject isKindOfClass:[NSError class]])
-			return handler((NSError *)jsonObject, NULL);
+			return handler((NSError *)jsonObject, nil);
 		
 		if (![jsonObject isKindOfClass:[NSDictionary class]])
 		{
 			NSLog(@"JSON is not a single object.");
 			
-			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], NULL);
+			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], nil);
 		}
 		
 		Car *car = [[Car alloc] init:(NSDictionary *)jsonObject];
 		
-		handler(NULL, car);
+		handler(nil, car);
 	}];
 }
 
@@ -110,7 +110,7 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 		if (error)
 			return handler(error);
 		
-		handler(NULL);
+		handler(nil);
 	}];
 }
 
@@ -119,21 +119,21 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 + (void)getCarsList:(NSString *)                                     urlStr
   completionHandler:(void (^)(NSError* error, NSMutableArray *cars)) handler
 {
-	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:NULL completionHandler:^(NSData *data, NSError *error)
+	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:nil completionHandler:^(NSData *data, NSError *error)
 	{
 		if (error)
-			return handler(error, NULL);
+			return handler(error, nil);
 		
 		NSObject *jsonObject = [HotWheels2API parseJSON:data];
 		
 		if ([jsonObject isKindOfClass:[NSError class]])
-			 return handler((NSError *)jsonObject, NULL);
+			 return handler((NSError *)jsonObject, nil);
 		
 		if (![jsonObject isKindOfClass:[NSArray class]])
 		{
 			NSLog(@"JSON is not array.");
 			
-			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], NULL);
+			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], nil);
 		}
 		
 		NSArray *carsJSON = (NSArray *)jsonObject;
@@ -142,7 +142,48 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 		for (NSDictionary *carJSON in carsJSON)
 			[cars addObject:[[Car alloc] init:carJSON]];
 		
-		handler(NULL, cars);
+		handler(nil, cars);
+	}];
+}
+
+
+
++ (void)addCustomCar:(Car *)               car
+   completionHandler:(void (^)(NSError *)) handler
+{
+	NSString *boundary = @"gc0p4Jq0M2Yt08jU534c0p";
+	NSDictionary *headers = @{
+		@"Content-Type": [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary]
+	};
+	
+	// build body
+	NSMutableData *body = [NSMutableData data];
+	[HotWheels2API addMultipartParam:@"name"                paramValueString:car.name                boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"segment"             paramValueString:car.segment             boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"series"              paramValueString:car.series              boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"make"                paramValueString:car.make                boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"color"               paramValueString:car.color               boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"style"               paramValueString:car.style               boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"customToyNumber"     paramValueString:car.customToyNumber     boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"distinguishingNotes" paramValueString:car.distinguishingNotes boundary:boundary body:body];
+	[HotWheels2API addMultipartParam:@"barcodeData"         paramValueString:car.barcodeData         boundary:boundary body:body];
+	
+	if (!car.detailImage)
+	{
+		[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n\r\n", @"carPicture", @"filename.jpeg"] dataUsingEncoding:NSUTF8StringEncoding]];
+
+		[body appendData: UIImageJPEGRepresentation(car.detailImage, 0.7f)];
+	}
+	
+	[body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+		
+	// make request
+	NSString *urlStr = [NSString stringWithFormat:@"%@addCustomCar.phpASDF", BASE_URL];
+	[HotWheels2API makeRequest:urlStr httpMethod:@"POST" httpBody:body headers:headers completionHandler:^(NSData *data, NSError *error)
+	{
+		sleep(3);
+		return handler(error);
 	}];
 }
 
@@ -151,43 +192,37 @@ completionHandler:(void (^)(NSError *error, NSMutableArray *cars)) handler
 
 
 // TODO: add wieghts and times to chached images so we don't run out of memory
-static NSMutableDictionary *imageCache = NULL;
-static NSMutableArray *detailsImageCache = NULL;
+static NSMutableDictionary *iconImageCache;
+static NSMutableDictionary *detailsImageCache;
 + (void) initialize
 {
 	[super initialize];
-	imageCache        = [[NSMutableDictionary alloc] init];
-	detailsImageCache = [NSMutableArray array];
+	iconImageCache    = [[NSMutableDictionary alloc] init];
+	detailsImageCache = [[NSMutableDictionary alloc] init];
+}
+
++ (UIImage *) getImageFromCache:(NSString *) imageCacheKey
+				 imageIsDetails:(bool)       imageIsDetails
+{
+	return (UIImage *)[(imageIsDetails? detailsImageCache : iconImageCache) valueForKey:imageCacheKey];
 }
 
 + (void) getImage:(NSString *) urlStr
 	imageCacheKey:(NSString *) imageCacheKey
    imageIsDetails:(bool)       imageIsDetails
-completionHandler:(void (^)(NSError* error, UIImage *image)) handler
+completionHandler:(void (^)(NSError* error, UIImage *image, bool wasCached)) handler
 {
-	UIImage *cachedImage = NULL;
-	
-	if (imageIsDetails)
-	{
-		for (NSArray *cache in detailsImageCache)
-		{
-			if ([imageCacheKey isEqualToString:cache[0]])
-			{
-				cachedImage = cache[1];
-				break;
-			}
-		}
-	}
-	else
-		cachedImage = [imageCache valueForKey:imageCacheKey];
+	UIImage *cachedImage = [HotWheels2API getImageFromCache:imageCacheKey imageIsDetails:imageIsDetails];
 	
 	if (cachedImage)
-		return handler(NULL, cachedImage);
+		return handler(nil, cachedImage, true);
 	
-	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:NULL completionHandler:^(NSData *data, NSError *error)
+	[HotWheels2API makeRequest:urlStr httpMethod:@"GET" httpBody:nil completionHandler:^(NSData *data, NSError *error)
 	{
+		//[NSThread sleepForTimeInterval:(500 + (rand() % 500)) * 0.001f];
+		
 		if (error)
-			return handler(error, NULL);
+			return handler(error, nil, false);
 		
 		UIImage *image = [UIImage imageWithData:data];
 		
@@ -195,43 +230,29 @@ completionHandler:(void (^)(NSError* error, UIImage *image)) handler
 		{
 			NSLog(@"HTTP image request (%@) error: invalid image", urlStr);
 			
-			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], NULL);
+			return handler([NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil)}], nil, false);
 		}
 		
-		if (imageIsDetails)
-		{
-			bool cacheFound = false;
-			for (int i = 0; i < [detailsImageCache count]; ++i)
-			{
-				if ([imageCacheKey isEqualToString:detailsImageCache[i][0]])
-				{
-					detailsImageCache[i][1] = image;
-					
-					cacheFound = true;
-					break;
-				}
-			}
-			
-			if (!cacheFound)
-			{
-				[detailsImageCache insertObject:[NSArray arrayWithObjects:imageCacheKey, image, nil] atIndex:0];
-				
-				if ([detailsImageCache count] > 20)
-					[detailsImageCache removeObjectAtIndex:20];
-			}
-		}
-		else
-			[imageCache setValue:image forKey:imageCacheKey];
 		
-		handler(NULL, image);
+		[(imageIsDetails? detailsImageCache : iconImageCache) setValue:image forKey:imageCacheKey];
+		
+		handler(nil, image, false);
 	}];
 }
-
 
 
 + (void)makeRequest:(NSString *) urlStr
 		 httpMethod:(NSString *) httpMethod
 		   httpBody:(NSData *)   httpBody
+  completionHandler:(void (^)(NSData* data, NSError* error)) handler
+{
+	[HotWheels2API makeRequest:urlStr httpMethod:httpMethod httpBody:httpBody headers:nil completionHandler:handler];
+}
+
++ (void)makeRequest:(NSString *)     urlStr
+		 httpMethod:(NSString *)     httpMethod
+		   httpBody:(NSData *)       httpBody
+			headers:(NSDictionary *) headers
   completionHandler:(void (^)(NSData* data, NSError* error)) handler
 {
 	NSURL *url = [[NSURL alloc] initWithString:urlStr];
@@ -240,31 +261,39 @@ completionHandler:(void (^)(NSError* error, UIImage *image)) handler
 	[request setHTTPMethod: httpMethod];
 	[request setHTTPBody: httpBody];
 	
+	if (!headers)
+	{
+		for (NSString* headerName in headers)
+			[request addValue:headers[headerName] forHTTPHeaderField: headerName];
+	}
+	
     [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
 	{
-		if (error)
-		{
-			NSLog(@"HTTP request (%@) error: %@", urlStr, error);
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (error)
+			{
+				NSLog(@"HTTP request (%@) error: %@", urlStr, error);
+				
+				return handler(data, error);
+			}
 			
-			return handler(NULL, error);
-		}
-		
-		int statusCode = (int)((NSHTTPURLResponse *)response).statusCode;
-		if (statusCode != 200)
-		{
-			NSLog(@"HTTP request (%@) status code: %i", urlStr, statusCode);
+			int statusCode = (int)((NSHTTPURLResponse *)response).statusCode;
+			if (statusCode != 200 && statusCode != 201)
+			{
+				NSLog(@"HTTP request (%@) status code: %i", urlStr, statusCode);
+				
+				return handler(data, [NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil), @"statusCode": @(statusCode)}]);
+			}
 			
-			return handler(NULL, [NSError errorWithDomain:@"hotWheels2" code:1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid HTTP response.", nil), @"statusCode": @(statusCode)}]);
-		}
-		
-		handler(data, NULL);
+			handler(data, nil);
+		});
 	}];
 }
 
 	 
 + (NSObject *)parseJSON:(NSData *) data
 {
-	NSError *jsonParsingError = NULL;
+	NSError *jsonParsingError;
 	NSObject *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonParsingError];
 	
 	if (jsonParsingError)
@@ -280,10 +309,37 @@ completionHandler:(void (^)(NSError* error, UIImage *image)) handler
 
 + (NSString *)encodeURIComponent:(NSString *) uriComponenet
 {
-	return CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-																	 CFBridgingRetain(uriComponenet),
-																	 NULL,
-																	 CFSTR(":/?#[]@!$&'()*+,;="),
-																	 kCFStringEncodingUTF8));
+	return [uriComponenet stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
++ (void)addMultipartParam:(NSString *)      paramName
+		 paramValueString:(NSString *)      paramValueString
+				 boundary:(NSString *)      boundary
+					 body:(NSMutableData *) body
+{
+	[HotWheels2API addMultipartParam:paramName paramValueData:[paramValueString dataUsingEncoding:NSUTF8StringEncoding] boundary:boundary body:body];
+}
++ (void)addMultipartParam:(NSString *)      paramName
+		   paramValueBool:(bool)            paramValueBool
+				 boundary:(NSString *)      boundary
+					 body:(NSMutableData *) body
+{
+	[HotWheels2API addMultipartParam:paramName paramValueData:[(paramValueBool? @"1" : @"0") dataUsingEncoding:NSUTF8StringEncoding] boundary:boundary body:body];
+}
++ (void)addMultipartParam:(NSString *)      paramName
+			paramValueInt:(int)             paramValueInt
+				 boundary:(NSString *)      boundary
+					 body:(NSMutableData *) body
+{
+	[HotWheels2API addMultipartParam:paramName paramValueData:[[NSString stringWithFormat:@"%i", paramValueInt] dataUsingEncoding:NSUTF8StringEncoding] boundary:boundary body:body];
+}
++ (void)addMultipartParam:(NSString *)      paramName
+		   paramValueData:(NSData *)        paramValueData
+				 boundary:(NSString *)      boundary
+					 body:(NSMutableData *) body
+{
+	[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", paramName] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:paramValueData];
 }
 @end

@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface addCar_InfoViewController : UIViewController
-
+- (void)reset;
 @end

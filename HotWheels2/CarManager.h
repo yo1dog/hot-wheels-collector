@@ -15,5 +15,5 @@
 
 - (CarWrapper *)getCarWrapper:(Car *) car;
 
-- (void)checkForRemoval:(CarWrapper *) carWrapper;
+- (void)releaseCarWrapper:(CarWrapper *) carWrapper;
 @end

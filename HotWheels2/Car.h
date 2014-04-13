@@ -10,24 +10,28 @@
 
 @interface Car : NSObject
 @property (nonatomic, strong) NSString *_id;
+@property (nonatomic, strong) NSString *vehicleID;           // nullable
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *toyNumber;
-@property (nonatomic, strong) NSString *segment;
-@property (nonatomic, strong) NSString *series;
-@property (nonatomic, strong) NSString *make;
-@property (nonatomic, strong) NSString *color;
-@property (nonatomic, strong) NSString *style;
-@property (nonatomic, strong) NSNumber *numUsersCollected;
-@property (nonatomic, strong) NSString *iconImageURL;
-@property (nonatomic, strong) NSString *detailImageURL;
+@property (nonatomic, strong) NSString *toyNumber;           // nullable
+@property (nonatomic, strong) NSString *segment;             // can be empty
+@property (nonatomic, strong) NSString *series;              // can be empty
+@property (nonatomic, strong) NSString *make;                // can be empty
+@property (nonatomic, strong) NSString *color;               // can be empty
+@property (nonatomic, strong) NSString *style;               // can be empty
+@property (nonatomic, strong) NSNumber *numUsersCollected;   // nullable
+@property                     bool      isCustom;
+@property (nonatomic, strong) NSString *customToyNumber;     // nullable
+@property (nonatomic, strong) NSString *distinguishingNotes; // nullable
+@property (nonatomic, strong) NSString *barcodeData;         // nullable
+
+@property (nonatomic, strong) NSString *iconImageURL;        // nullable
+@property (nonatomic, strong) NSString *detailImageURL;      // nullable
+
 
 @property bool owned;
 
 @property (nonatomic, strong) UIImage *iconImage;
 @property (nonatomic, strong) UIImage *detailImage;
-
-@property (nonatomic, strong) NSString *barcode;
-@property (nonatomic, strong) NSString *distinguishingNotes;
 
 - (id) init:(NSDictionary *)jsonObject;
 @end

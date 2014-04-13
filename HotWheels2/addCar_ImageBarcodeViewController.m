@@ -64,8 +64,8 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 	else
 		[self.pictureImageView setImage:[ImageBank getCarError]];
 	
-	if (self.car.barcode)
-		[self generateBarcode:self.car.barcode];
+	if (self.car.barcodeData != NULL)
+		[self generateBarcode:self.car.barcodeData];
 	
 	
 	self.pictureImageView.layer.borderWidth = 1;
@@ -165,7 +165,7 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 
 - (void)barcodeRead:(NSString *)barCodeString
 {
-	self.car.barcode = barCodeString;
+	self.car.barcodeData = barCodeString;
 	
 	dispatch_async(dispatch_get_main_queue(), ^
 	{
@@ -216,6 +216,7 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 	{
 		detailsViewController *controller = (detailsViewController *)segue.destinationViewController;
 		controller.car = self.car;
+		controller.addCar_InfoViewController = self.addCar_InfoViewController;
 	}
 }
 @end
