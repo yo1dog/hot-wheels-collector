@@ -20,7 +20,7 @@
 @property int maxShownForFirstTimeStartCellIndex;
 @property int maxShownForFirstTimeLastCellIndex;
 
-@property(nonatomic, weak) CarManager *carManager;
+@property CGSize __contentSize;
 @end
 
 @implementation UICarGridView
@@ -46,8 +46,6 @@ int VIEW_BOTTOM_PADDING = 200;
 		self.canCancelContentTouches = true;
 		
 		self.carCells = [[NSMutableArray array] init];
-		self.carManager = [CarManager getSingleton];
-		
 		self.topPadding = 0;
     }
 	
@@ -80,7 +78,7 @@ int VIEW_BOTTOM_PADDING = 200;
 	for (Car *car in cars)
 	{
 		// get/add the car from/to the car manager
-		CarWrapper * carWrapper = [self.carManager getCarWrapper:car];
+		CarWrapper * carWrapper = [CarManager getCarWrapper:car];
 		
 		int x = PADDING_X + col * (CELL_WIDTH  + CELL_PADDING_X);
 		int y = PADDING_Y + row * (CELL_HEIGHT + CELL_PADDING_Y) + self.topPadding;
@@ -102,9 +100,18 @@ int VIEW_BOTTOM_PADDING = 200;
 		}
 	}
 	
-	[self setContentSize:CGSizeMake(width + PADDING_X, height + PADDING_Y)];
+	self.__contentSize = CGSizeMake(width + PADDING_X, height + PADDING_Y);
+	[self setContentSize:self.__contentSize];
 	[self viewCells];
 }
+
+- (void)setContentSize:(CGSize)contentSize
+{
+	// TODO: keep internals from reseting content size to 0 when the view controller disppears.... very icky
+	[super setContentSize:self.__contentSize];
+}
+
+
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {

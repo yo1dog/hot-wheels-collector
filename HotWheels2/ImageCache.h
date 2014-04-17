@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@interface ImageCache : NSObject
++ (UIImage *)getImage:(NSString *) imageCacheKey
+	   imageIsDetails:(bool)       imageIsDetails;
+
++ (void)cacheImage:(UIImage *)  image
+		   withKey:(NSString *) key
+	imageIsDetails:(bool)       imageIsDetails;
+@end
+
 /*typedef NS_ENUM(int, ImageCacheWeight)
 {
     ImageCacheWeight_Search,

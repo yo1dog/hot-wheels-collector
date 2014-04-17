@@ -7,7 +7,7 @@
 //
 
 #import "Car.h"
-#import "HotWheels2API.h"
+#import "ImageCache.h"
 #import "ImageBank.h"
 
 @implementation Car
@@ -56,12 +56,12 @@
 	if (!self.iconImageURL)
 		self.iconImage = [ImageBank getCarError];
 	else
-		self.iconImage = [HotWheels2API getImageFromCache:self._id imageIsDetails:false];
+		self.iconImage = [ImageCache getImage:self._id imageIsDetails:false];
 	
 	if (!self.detailImageURL)
 		self.detailImage = [ImageBank getCarError];
 	else
-		self.detailImage = [HotWheels2API getImageFromCache:self._id imageIsDetails:true];
+		self.detailImage = [ImageCache getImage:self._id imageIsDetails:true];
 	
 	return self;
 }

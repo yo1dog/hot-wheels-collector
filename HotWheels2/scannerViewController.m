@@ -14,20 +14,24 @@
 #import "CarManager.h"
 
 @interface scannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIAlertViewDelegate>
-@property(nonatomic, weak) IBOutlet UIView                  *previewView;
-@property(nonatomic, weak) IBOutlet UILabel                 *statusLabel;
-@property(nonatomic, weak) IBOutlet UIActivityIndicatorView *activityView;
+@property(nonatomic, strong) IBOutlet UIView                  *previewView;
+@property(nonatomic, strong) IBOutlet UILabel                 *statusLabel;
+@property(nonatomic, strong) IBOutlet UIView                  *statusLabelBackgroundView;
+@property(nonatomic, strong) IBOutlet UIActivityIndicatorView *activityView;
+@property(nonatomic, strong) IBOutlet UIView                  *activityViewBackgroundView;
+
+@property(nonatomic, strong) UILabel *autoAddMessageLabel;
 
 @property(nonatomic, strong) AVCaptureSession           *captureSession;
 @property(nonatomic, strong) AVCaptureVideoPreviewLayer *videoPreviewLayer;
 
 @property(nonatomic, weak) CarWrapper *qrCodeCarWrapper;
-@property(nonatomic, weak) CarManager *carManager;
 
-@property bool ignoreSearchResponse;
+@property bool ignoreSearchOrAddResponse;
 @property bool isScanning;
-@property bool isSearching;
+@property bool isSearchingOrAdding;
 @property bool alertShown;
+@property bool autoAdd;
 @end
 
 
@@ -44,21 +48,39 @@
 {
 	[super viewDidLoad];
 	
-	self.carManager = [CarManager getSingleton];
+	self.activityViewBackgroundView.backgroundColor     = [UIColor blackColor];
+	self.activityViewBackgroundView.layer.cornerRadius  = 10;
+	self.activityViewBackgroundView.layer.masksToBounds = true;
+	
+	self.statusLabelBackgroundView.backgroundColor     = [UIColor blackColor];
+	self.statusLabelBackgroundView.layer.cornerRadius  = 10;
+	self.statusLabelBackgroundView.layer.masksToBounds = true;
+	
+	self.autoAddMessageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
+																		 self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height + 10,
+																		 0, 25)];
+	self.autoAddMessageLabel.opaque = false;
+	self.autoAddMessageLabel.font = [UIFont systemFontOfSize:15.0f];
+	self.autoAddMessageLabel.textAlignment = NSTextAlignmentCenter;
+	
+	self.autoAddMessageLabel.layer.cornerRadius  = 12;
+	self.autoAddMessageLabel.layer.masksToBounds = true;
+	
+	[self.view addSubview:self.autoAddMessageLabel];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	// if we have already created the scanner, and we are not searching, and there is no alert being shown, and we are not already scanning, show the scanning UI
+	// if we have already created the scanner, and we are not searching/adding, and there is no alert being shown, and we are not already scanning, show the scanning UI
 	// note that we do not actually start scanning until view did appear
-	if (self.captureSession && !self.isSearching && !self.alertShown && !self.isScanning)
+	if (self.captureSession && !self.isSearchingOrAdding && !self.alertShown && !self.isScanning)
 		[self setUIScanning];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
 	// we are back, stop ignoring responses
-	self.ignoreSearchResponse = false;
+	self.ignoreSearchOrAddResponse = false;
 	
 	// if the scanner has not been created, create it
 	if (!self.captureSession)
@@ -71,16 +93,17 @@
 	// the scanner has already been created
 	else
 	{
-		// if we are not searching, and there is no alert being shown, and we are not already scanning, start scanning
-		if (!self.isSearching && !self.alertShown && !self.isScanning)
+		// if we are not searching/adding, and there is no alert being shown, and we are not already scanning, start scanning
+		if (!self.isSearchingOrAdding && !self.alertShown && !self.isScanning)
 			self.isScanning = true;
 	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-	// we are leaving, ignore responses
-	self.ignoreSearchResponse = true;
+	// we are leaving, ignore responses and stop scanning
+	self.ignoreSearchOrAddResponse = true;
+	self.isScanning = false;
 }
 
 - (void)dealloc
@@ -95,18 +118,71 @@
 - (void)setUIScanning
 {
 	self.statusLabel.text = @"";
-	[self.activityView stopAnimating];
+	self.statusLabelBackgroundView.hidden = true;
 	
-	[self.captureSession startRunning];
+	[self.activityView stopAnimating];
+	self.activityViewBackgroundView.hidden = true;
+	
+	if (![self.captureSession isRunning])
+		[self.captureSession startRunning];
 }
 
-- (void)setUISearching
+- (void)setUISearchingOrAdding:(bool)isAdding
 {
-	self.statusLabel.text = @"Searching...";
-	[self.activityView startAnimating];
+	self.statusLabel.text = isAdding? @"Adding..." : @"Searching...";
+	self.statusLabelBackgroundView.hidden = false;
 	
-	[self.captureSession stopRunning];
+	[self.activityView startAnimating];
+	self.activityViewBackgroundView.hidden = false;
+	
+	if (!self.autoAdd)
+		[self.captureSession stopRunning];
 }
+
+- (void)setUIAlert
+{
+	self.statusLabel.text = @"";
+	self.statusLabelBackgroundView.hidden = true;
+	
+	[self.activityView stopAnimating];
+	self.activityViewBackgroundView.hidden = true;
+}
+
+
+
+- (void)setAutoAddMessage:(NSString *) message
+{
+	[self setAutoAddMessage:message withLevel:0];
+}
+- (void)setAutoAddMessage:(NSString *) message withLevel:(int) level
+{
+	[self.autoAddMessageLabel.layer removeAllAnimations];
+	
+	self.autoAddMessageLabel.alpha = 1.0f;
+	self.autoAddMessageLabel.text = message;
+	
+	UIColor *backgroundColor;
+	if (level == 0)
+		backgroundColor = [UIColor colorWithRed:0.0f green:(212 / 255.0f) blue:( 8 / 255.0f) alpha:1.0f];
+	else if (level == 1)
+		backgroundColor = [UIColor colorWithRed:1.0f green:(242 / 255.0f) blue:0.0f          alpha:1.0f];
+	else
+		backgroundColor = [UIColor colorWithRed:1.0f green:( 28 / 255.0f) blue:(44 / 255.0f) alpha:1.0f];
+	
+	self.autoAddMessageLabel.backgroundColor = backgroundColor;
+	
+	float width = [self.autoAddMessageLabel.text sizeWithAttributes:@{NSFontAttributeName: self.autoAddMessageLabel.font}].width + 20;
+	self.autoAddMessageLabel.frame = CGRectMake(self.view.frame.size.width - width - 10,
+												self.autoAddMessageLabel.frame.origin.y,
+												width,
+												self.autoAddMessageLabel.frame.size.height);
+	
+	[UIView animateWithDuration:0.5f delay:3.0f options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionTransitionNone animations:^{
+		self.autoAddMessageLabel.alpha = 0.0f;
+	} completion:nil];
+}
+
+
 
 
 
@@ -120,8 +196,14 @@
 	
 	if (!input)
 	{
-		// TODO: Show error to user
 		NSLog(@"Error getting the device input: %@", [error localizedDescription]);
+		
+		[[[UIAlertView alloc]initWithTitle: @"Unable to Scan"
+								   message: @"Failed to create the QR code scanner."
+								  delegate: nil
+						 cancelButtonTitle: @"OK"
+						 otherButtonTitles: nil, nil] show];
+		
 		return;
 	}
 	
@@ -176,61 +258,132 @@
 	if (!self.isScanning)
 		return;
 	
-	// stop scanning and start searching
+	// stop scanning and start searching/adding
 	self.isScanning = false;
-	self.isSearching = true;
+	self.isSearchingOrAdding = true;
 	
 	dispatch_async(dispatch_get_main_queue(), ^
 	{
-		[self setUISearching];
+		[self setUISearchingOrAdding:self.autoAdd];
 	});
 	
-	[HotWheels2API getCarFromQRCode:qrCodeString userID:[UserManager getUserID] handler:^(NSError *error, Car *car)
+	if (self.autoAdd)
 	{
-		// we are no longer searching
-		self.isSearching = false;
-		
-		// if we are ignoring responses, just go back to scanning
-		if (self.ignoreSearchResponse)
+		[HotWheels2API setCarOwnedFromQRCode:[UserManager getLoggedInUserID] qrCodeData:qrCodeString owned:true completionHandler:^(HotWheels2APIError *error, NSString *carName, bool ownedChanged)
 		{
-			dispatch_async(dispatch_get_main_queue(), ^
-			{
-				[self setUIScanning];
-				self.isScanning = true;
-			});
+			// we are no longer adding
+			self.isSearchingOrAdding = false;
 			
-			return;
-		}
-		
-		// if we got an error, show an alert and wait from them to dismiss it before scanning again
-		if (error)
-		{
-			dispatch_async(dispatch_get_main_queue(), ^
+			// if we are ignoring responses, just go back to scanning
+			if (self.ignoreSearchOrAddResponse)
 			{
-				// hide the label and the activity idicator
-				self.statusLabel.text = @"";
-				[self.activityView stopAnimating];
+				dispatch_async(dispatch_get_main_queue(), ^
+				{
+					[self setUIScanning];
+					self.isScanning = true;
+				});
 				
-				// show an alert
-				UIAlertView *alert = [[UIAlertView alloc]initWithTitle: @"Error"
-															   message: [NSString stringWithFormat:@"%@", error]
-															  delegate: self
-													 cancelButtonTitle: @"OK"
-													 otherButtonTitles: nil, nil];
-				   
-				[alert show];
-				self.alertShown = true;
-				
-				// don't start scanning again until they dismiss the error
-			});
-		}
-		
-		
-		// success! we got a car back! Go to the details page and wait for them to come back before scanning again
-		else
+				return;
+			}
+			
+			// if we got an error back, show the correct response
+			if (error)
+			{
+				if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
+				{
+					int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
+					
+					if (statusCode == 404)
+						[self setAutoAddMessage:@"Car Not Found" withLevel:2];
+					else if (statusCode == 400)
+						[self setAutoAddMessage:@"Invalid QR Code" withLevel:2];
+					else
+						[self setAutoAddMessage:@"Error Adding Car" withLevel:2];
+				}
+			}
+			else
+			{
+				if (ownedChanged)
+					[self setAutoAddMessage:[carName stringByAppendingString:@" Added"] withLevel:0];
+				else
+					[self setAutoAddMessage:[carName stringByAppendingString:@" Already Owned"] withLevel:1];
+			}
+			
+			[self setUIScanning];
+			self.isScanning = true;
+		}];
+	}
+	else
+	{
+		[HotWheels2API getCarFromQRCode:qrCodeString userID:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, Car *car)
 		{
+			// we are no longer searching
+			self.isSearchingOrAdding = false;
+			
+			// if we are ignoring responses, just go back to scanning
+			if (self.ignoreSearchOrAddResponse)
+			{
+				dispatch_async(dispatch_get_main_queue(), ^
+				{
+					[self setUIScanning];
+					self.isScanning = true;
+				});
+				
+				return;
+			}
+			
+			// if we got an error, show an alert and wait from them to dismiss it before scanning again
+			if (error)
+			{
+				dispatch_async(dispatch_get_main_queue(), ^
+				{
+					// hide the label and the activity idicator
+					[self setUIAlert];
+					
+					// show an alert
+					UIAlertView *alertView;
+					
+					if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
+					{
+						int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
+						
+						if (statusCode == 404)
+						{
+							alertView = [[UIAlertView alloc]initWithTitle: @"Car Not Found"
+																  message: @"We were unable to find a car from the QR code you scanned."
+																 delegate: self
+														cancelButtonTitle: @"OK"
+														otherButtonTitles: nil, nil];
+						}
+						else if (statusCode == 400)
+						{
+							alertView = [[UIAlertView alloc]initWithTitle: @"Invalid QR Code"
+																  message: @"The QR Code you scanned is not a Hot Wheels Car QR code."
+																 delegate: self
+														cancelButtonTitle: @"OK"
+														otherButtonTitles: nil, nil];
+						}
+					}
+					
+					if (!alertView)
+					{
+						alertView = [error createAlert:@"Search Failed"];
+						alertView.delegate = self;
+					}
+					
+					[alertView show];
+					self.alertShown = true;
+					
+					// don't start scanning again until they dismiss the error
+				});
+				
+				return;
+			}
+			
+			
+			// success! we got a car back! Add the car or Go to the details page and wait for them to come back before scanning again
 			// get the wrapper for the car
-			CarWrapper *carWrapper = [self.carManager getCarWrapper:car];
+			CarWrapper *carWrapper = [CarManager getCarWrapper:car];
 			self.qrCodeCarWrapper = carWrapper;
 			
 			// go to details page
@@ -240,14 +393,15 @@
 			});
 			
 			// don't start scanning again until they come back
-		}
-	 }];
+		 }];
+	}
 }
 
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
 	self.alertShown = false;
+	
 	[self setUIScanning];
 	self.isScanning = true;
 }
@@ -259,5 +413,12 @@
 	
 	// set the car wrapper
 	controller.carWrapper = self.qrCodeCarWrapper;
+}
+
+- (IBAction)autoAddSwitchValueChanged:(UISwitch *)autoAddSwitch
+{
+	self.autoAdd = autoAddSwitch.isOn;
+	
+	[self setAutoAddMessage:self.autoAdd? @"Auto-Add Enabled" : @"Auto-Add Disabled" withLevel:1];
 }
 @end

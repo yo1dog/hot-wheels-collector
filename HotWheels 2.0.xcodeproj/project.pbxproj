@@ -24,6 +24,9 @@
 		270F9F06185997F60063C8B6 /* Hot_Wheels_2_0Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 270F9F05185997F60063C8B6 /* Hot_Wheels_2_0Tests.m */; };
 		270F9F1D1859C1700063C8B6 /* CarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 270F9F1C1859C1700063C8B6 /* CarCell.m */; };
 		2715EF1318F9C9D9003A3EE3 /* CarWrapperListener.m in Sources */ = {isa = PBXBuildFile; fileRef = 2715EF1218F9C9D8003A3EE3 /* CarWrapperListener.m */; };
+		2715EF1818FB6FB1003A3EE3 /* HotWheels2APIErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 2715EF1718FB6FB1003A3EE3 /* HotWheels2APIErrors.m */; };
+		2715EF1B18FCF620003A3EE3 /* loginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2715EF1A18FCF620003A3EE3 /* loginViewController.m */; };
+		2715EF1E18FD06A0003A3EE3 /* addCarNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2715EF1D18FD06A0003A3EE3 /* addCarNavigationController.m */; };
 		271A1ECE18A9716A00E0A18A /* centeredImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 271A1ECD18A9716A00E0A18A /* centeredImageView.m */; };
 		271A1ED018A98B5200E0A18A /* notes in Resources */ = {isa = PBXBuildFile; fileRef = 271A1ECF18A98B5200E0A18A /* notes */; };
 		271A1ED618ADDEEE00E0A18A /* addCar_InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 271A1ED518ADDEEE00E0A18A /* addCar_InfoViewController.m */; };
@@ -35,7 +38,6 @@
 		271E13BC186C96C0001B2E48 /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 271E13BB186C96C0001B2E48 /* ImageCache.m */; };
 		27BC113118A197CE00EA3769 /* scannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC113018A197CE00EA3769 /* scannerViewController.m */; };
 		27BC113418A2DB7C00EA3769 /* barcodeScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC113318A2DB7C00EA3769 /* barcodeScannerViewController.m */; };
-		27BC113718A2DC5200EA3769 /* addCarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC113618A2DC5200EA3769 /* addCarViewController.m */; };
 		27BC130C18A2F08C00EA3769 /* ZXAztecDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC113C18A2F08B00EA3769 /* ZXAztecDecoder.m */; };
 		27BC130D18A2F08C00EA3769 /* ZXAztecDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC113F18A2F08B00EA3769 /* ZXAztecDetector.m */; };
 		27BC130E18A2F08C00EA3769 /* ZXAztecCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BC114218A2F08B00EA3769 /* ZXAztecCode.m */; };
@@ -298,6 +300,12 @@
 		2715EF1118F9C9D8003A3EE3 /* CarWrapperListener.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = CarWrapperListener.h; path = ../CarWrapperListener.h; sourceTree = "<group>"; tabWidth = 4; };
 		2715EF1218F9C9D8003A3EE3 /* CarWrapperListener.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; name = CarWrapperListener.m; path = ../CarWrapperListener.m; sourceTree = "<group>"; tabWidth = 4; };
 		2715EF1418F9CBE4003A3EE3 /* CarWrapperUpdatedEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CarWrapperUpdatedEvent.h; sourceTree = "<group>"; };
+		2715EF1618FB6FB1003A3EE3 /* HotWheels2APIErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = HotWheels2APIErrors.h; sourceTree = "<group>"; tabWidth = 4; };
+		2715EF1718FB6FB1003A3EE3 /* HotWheels2APIErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = HotWheels2APIErrors.m; sourceTree = "<group>"; tabWidth = 4; };
+		2715EF1918FCF620003A3EE3 /* loginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = loginViewController.h; sourceTree = "<group>"; tabWidth = 4; };
+		2715EF1A18FCF620003A3EE3 /* loginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = loginViewController.m; sourceTree = "<group>"; tabWidth = 4; };
+		2715EF1C18FD06A0003A3EE3 /* addCarNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = addCarNavigationController.h; sourceTree = "<group>"; tabWidth = 4; };
+		2715EF1D18FD06A0003A3EE3 /* addCarNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = addCarNavigationController.m; sourceTree = "<group>"; tabWidth = 4; };
 		271A1ECC18A9716A00E0A18A /* centeredImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = centeredImageView.h; sourceTree = "<group>"; tabWidth = 4; };
 		271A1ECD18A9716A00E0A18A /* centeredImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = centeredImageView.m; sourceTree = "<group>"; tabWidth = 4; };
 		271A1ECF18A98B5200E0A18A /* notes */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notes; sourceTree = "<group>"; };
@@ -316,8 +324,6 @@
 		27BC113018A197CE00EA3769 /* scannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = scannerViewController.m; sourceTree = "<group>"; tabWidth = 4; };
 		27BC113218A2DB7C00EA3769 /* barcodeScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = barcodeScannerViewController.h; sourceTree = "<group>"; tabWidth = 4; };
 		27BC113318A2DB7C00EA3769 /* barcodeScannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = barcodeScannerViewController.m; sourceTree = "<group>"; tabWidth = 4; };
-		27BC113518A2DC5200EA3769 /* addCarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = addCarViewController.h; sourceTree = "<group>"; tabWidth = 4; };
-		27BC113618A2DC5200EA3769 /* addCarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = addCarViewController.m; sourceTree = "<group>"; tabWidth = 4; };
 		27BC113B18A2F08B00EA3769 /* ZXAztecDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXAztecDecoder.h; sourceTree = "<group>"; };
 		27BC113C18A2F08B00EA3769 /* ZXAztecDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZXAztecDecoder.m; sourceTree = "<group>"; };
 		27BC113E18A2F08B00EA3769 /* ZXAztecDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZXAztecDetector.h; sourceTree = "<group>"; };
@@ -844,11 +850,11 @@
 		270F9EDD185997F60063C8B6 /* HotWheels2 */ = {
 			isa = PBXGroup;
 			children = (
-				27CE4E7A18C658A300C49923 /* UserManager.h */,
-				27CE4E7B18C658A300C49923 /* UserManager.m */,
 				270F9EE6185997F60063C8B6 /* hotwheels2AppDelegate.h */,
 				270F9EE7185997F60063C8B6 /* hotwheels2AppDelegate.m */,
 				270F9EE9185997F60063C8B6 /* Main.storyboard */,
+				2715EF1918FCF620003A3EE3 /* loginViewController.h */,
+				2715EF1A18FCF620003A3EE3 /* loginViewController.m */,
 				270F9EEC185997F60063C8B6 /* searchViewController.h */,
 				270F9EED185997F60063C8B6 /* searchViewController.m */,
 				270F9EEF185997F60063C8B6 /* collectionViewController.h */,
@@ -859,6 +865,8 @@
 				271E137D1868F702001B2E48 /* collectionRemovalsViewController.m */,
 				27BC112F18A197CE00EA3769 /* scannerViewController.h */,
 				27BC113018A197CE00EA3769 /* scannerViewController.m */,
+				2715EF1C18FD06A0003A3EE3 /* addCarNavigationController.h */,
+				2715EF1D18FD06A0003A3EE3 /* addCarNavigationController.m */,
 				271A1ED418ADDEEE00E0A18A /* addCar_InfoViewController.h */,
 				271A1ED518ADDEEE00E0A18A /* addCar_InfoViewController.m */,
 				27FF089D18ADF3810007FDEE /* addCar_ImageBarcodeViewController.h */,
@@ -882,12 +890,12 @@
 				271A1ECC18A9716A00E0A18A /* centeredImageView.h */,
 				271A1ECD18A9716A00E0A18A /* centeredImageView.m */,
 				271A1ECF18A98B5200E0A18A /* notes */,
-				27BC113518A2DC5200EA3769 /* addCarViewController.h */,
-				27BC113618A2DC5200EA3769 /* addCarViewController.m */,
 				27E0127618F218DA0021F1F2 /* UICarGridView.h */,
 				27E0127718F218DA0021F1F2 /* UICarGridView.m */,
 				270F9F1B1859C1700063C8B6 /* CarCell.h */,
 				270F9F1C1859C1700063C8B6 /* CarCell.m */,
+				27CE4E7A18C658A300C49923 /* UserManager.h */,
+				27CE4E7B18C658A300C49923 /* UserManager.m */,
 			);
 			indentWidth = 1;
 			path = HotWheels2;
@@ -1620,6 +1628,8 @@
 			children = (
 				27F5A349185A4B8C00576D5F /* HotWheels2API.h */,
 				27F5A34A185A4B8C00576D5F /* HotWheels2API.m */,
+				2715EF1618FB6FB1003A3EE3 /* HotWheels2APIErrors.h */,
+				2715EF1718FB6FB1003A3EE3 /* HotWheels2APIErrors.m */,
 				27F5A34D185A68EC00576D5F /* Car.h */,
 				27F5A34E185A68EC00576D5F /* Car.m */,
 				271E13BA186C96C0001B2E48 /* ImageCache.h */,
@@ -1827,6 +1837,7 @@
 				27F5A34F185A68EC00576D5F /* Car.m in Sources */,
 				27BC132A18A2F08C00EA3769 /* ZXSMTPResultParser.m in Sources */,
 				27BC13DD18A2F08C00EA3769 /* ZXResult.m in Sources */,
+				2715EF1818FB6FB1003A3EE3 /* HotWheels2APIErrors.m in Sources */,
 				27BC13AD18A2F08C00EA3769 /* ZXPDF417DetectionResultRowIndicatorColumn.m in Sources */,
 				27BC133318A2F08C00EA3769 /* ZXWifiParsedResult.m in Sources */,
 				27BC138618A2F08C00EA3769 /* ZXRSSFinderPattern.m in Sources */,
@@ -1895,6 +1906,7 @@
 				27BC13C418A2F08C00EA3769 /* ZXAlignmentPattern.m in Sources */,
 				27BC133118A2F08C00EA3769 /* ZXVCardResultParser.m in Sources */,
 				27BC139A18A2F08C00EA3769 /* ZXUPCAReader.m in Sources */,
+				2715EF1E18FD06A0003A3EE3 /* addCarNavigationController.m in Sources */,
 				27BC13C218A2F08C00EA3769 /* ZXQRCodeDecoder.m in Sources */,
 				27BC132118A2F08C00EA3769 /* ZXISBNParsedResult.m in Sources */,
 				27BC13D318A2F08C00EA3769 /* ZXBinaryBitmap.m in Sources */,
@@ -1915,11 +1927,11 @@
 				270F9EEE185997F60063C8B6 /* searchViewController.m in Sources */,
 				27BC137118A2F08C00EA3769 /* ZXAI013x0xDecoder.m in Sources */,
 				27BC13C118A2F08C00EA3769 /* ZXQRCodeDecodedBitStreamParser.m in Sources */,
+				2715EF1B18FCF620003A3EE3 /* loginViewController.m in Sources */,
 				27BC133C18A2F08C00EA3769 /* ZXGenericGF.m in Sources */,
 				27BC137518A2F08C00EA3769 /* ZXAnyAIDecoder.m in Sources */,
 				27BC136518A2F08C00EA3769 /* ZXMaxiCodeReader.m in Sources */,
 				27BC139C18A2F08C00EA3769 /* ZXUPCEANExtension2Support.m in Sources */,
-				27BC113718A2DC5200EA3769 /* addCarViewController.m in Sources */,
 				27BC13D018A2F08C00EA3769 /* ZXQRCodeReader.m in Sources */,
 				27BC13B218A2F08C00EA3769 /* ZXBarcodeRow.m in Sources */,
 				27BC13D118A2F08C00EA3769 /* ZXQRCodeWriter.m in Sources */,

@@ -21,8 +21,6 @@
 @property(nonatomic, strong) IBOutlet UILabel       *noSearchResultsLabel;
 @property(nonatomic, strong) IBOutlet UIImageView   *qrCodeImageView;
 
-@property(nonatomic, weak) CarManager *carManager;
-
 @property int searchRequestNumber;
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
 @end
@@ -33,9 +31,6 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	
-	// get the car manager
-	self.carManager = [CarManager getSingleton];
 	
 	// init some vars
 	self.searchRequestNumber = 0;
@@ -91,9 +86,9 @@
 	return self.searchRequestNumber;
 }
 
-- (void)finishSearch:(int)              searchRequestNumber
-				cars:(NSMutableArray *) cars
-			   error:(NSError *)        error
+- (void)finishSearch:(int)                  searchRequestNumber
+			   error:(HotWheels2APIError *) error
+				cars:(NSMutableArray *)     cars
 {
 	// make sure the reponse is from the latest request
 	if (searchRequestNumber != self.searchRequestNumber)
@@ -102,8 +97,11 @@
 	// hide the activity indicator
 	[self toggleSearchBarActivity:false];
 	
-	if (error || !cars)
+	if (error)
+	{
+		[[error createAlert:@"Search Failed"] show];
 		return;
+	}
 	
 	[self.carGridView setCars:cars];
 	
@@ -130,11 +128,11 @@
 	int searchRequestNumber = [self startSearch];
 	
 	// preform the search
-	[HotWheels2API search:searchBar.text userID:[UserManager getUserID] completionHandler:^(NSError *sbsbc_error, NSMutableArray *sbsbc_cars)
+	[HotWheels2API search:searchBar.text userID:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars)
 	{
 		dispatch_async(dispatch_get_main_queue(), ^
 		{
-			[self finishSearch:searchRequestNumber cars:sbsbc_cars error:sbsbc_error];
+			[self finishSearch:searchRequestNumber error:error cars:cars];
 		});
 	}];
 	

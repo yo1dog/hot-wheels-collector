@@ -10,31 +10,31 @@
 
 @implementation ImageBank
 
+static UIImage *badgeOwned;
+static UIImage *badgeUnowned;
 static UIImage *carError;
-+ (UIImage *)getCarError
+
++ (void)initialize
 {
-	if (!carError)
-		carError = [UIImage imageNamed:@"carError"];
+	[super initialize];
 	
-	return carError;
+	badgeOwned   = [UIImage imageNamed:@"badgeOwned"];
+	badgeUnowned = [UIImage imageNamed:@"badgeUnowned"];
+	carError     = [UIImage imageNamed:@"carError"];
 }
 
-static UIImage *badgeOwned;
+
 + (UIImage *)getBadgeOwned
 {
-	if (!badgeOwned)
-		badgeOwned = [UIImage imageNamed:@"badgeOwned"];
-	
 	return badgeOwned;
 }
-
-static UIImage *badgeUnowned;
 + (UIImage *)getBadgeUnowned
 {
-	if (!badgeUnowned)
-		badgeUnowned = [UIImage imageNamed:@"badgeUnowned"];
-	
 	return badgeUnowned;
+}
++ (UIImage *)getCarError
+{
+	return carError;
 }
 
 @end

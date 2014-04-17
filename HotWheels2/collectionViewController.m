@@ -22,8 +22,6 @@
 @property(nonatomic, strong) UIBarButtonItem         *activityButton;
 @property(nonatomic, strong) UIActivityIndicatorView *activityView;
 
-@property(nonatomic, weak) CarManager *carManager;
-
 @property bool collectionRequesting;
 
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
@@ -35,9 +33,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	
-	// get the car manager
-	self.carManager = [CarManager getSingleton];
 	
 	// create the activity button for the navigation bar
 	self.activityView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
@@ -97,7 +92,7 @@
 	[self toggleRefreshActivity:true];
 	
 	// make the request
-	[HotWheels2API getCollection:[UserManager getUserID] handler:^(NSError *error, NSMutableArray *cars)
+	[HotWheels2API getCollection:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars)
 	{
 		self.collectionRequesting = false;
 		
@@ -107,8 +102,11 @@
 			self.refreshButton.enabled = true;
 			[self toggleRefreshActivity:false];
 			
-			if (error || !cars)
+			if (error)
+			{
+				[[error createAlert:@"Unable to get Collection"] show];
 				return;
+			}
 		
 			// update screen
 			[self.carGridView setCars:cars];

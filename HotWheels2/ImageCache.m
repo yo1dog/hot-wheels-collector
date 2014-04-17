@@ -8,8 +8,35 @@
 
 #import "ImageCache.h"
 
+@implementation ImageCache
 
-/*@interface CachedImage : NSObject
+static NSMutableDictionary *iconImageCache;
+static NSMutableDictionary *detailsImageCache;
+
++ (void)initialize
+{
+	[super initialize];
+	
+	iconImageCache    = [[NSMutableDictionary alloc] init];
+	detailsImageCache = [[NSMutableDictionary alloc] init];
+}
+
++ (UIImage *)getImage:(NSString *) imageCacheKey
+	   imageIsDetails:(bool)       imageIsDetails
+{
+	// TODO: add wieghts and times to chached images so we don't run out of memory
+	return (UIImage *)[(imageIsDetails? detailsImageCache : iconImageCache) valueForKey:imageCacheKey];
+}
+
++ (void)cacheImage:(UIImage *)  image
+		   withKey:(NSString *) key
+	imageIsDetails:(bool)       imageIsDetails
+{
+	[(imageIsDetails? detailsImageCache : iconImageCache) setValue:image forKey:key];
+}
+@end
+
+/*@interface CachedImage
 @property (nonatomic, strong) UIImage *image;
 @property ImageCacheWeight             weight;
 @property long                         order;

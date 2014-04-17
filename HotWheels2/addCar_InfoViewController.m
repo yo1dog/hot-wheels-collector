@@ -24,6 +24,9 @@
 @property(nonatomic, weak) IBOutlet UITextView *distinguishingNotesTextView;
 
 @property(nonatomic, strong) Car *car;
+
+@property(nonatomic, strong) UIAlertView *resetAlertView;
+@property(nonatomic, strong) UIAlertView *nameMissingAlertView;
 @end
 
 
@@ -58,15 +61,6 @@
 {
 	[super viewWillDisappear:animated];
 	
-	[self.nameTextField               resignFirstResponder];
-	[self.segmentTextField            resignFirstResponder];
-	[self.seriesTextField             resignFirstResponder];
-	[self.makeTextField               resignFirstResponder];
-	[self.colorTextField              resignFirstResponder];
-	[self.styleTextField              resignFirstResponder];
-	[self.toyNumberTextField          resignFirstResponder];
-	[self.distinguishingNotesTextView resignFirstResponder];
-	
 	self.car.name                = [self.nameTextField              .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.segment             = [self.segmentTextField           .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.series              = [self.seriesTextField            .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -75,6 +69,29 @@
 	self.car.style               = [self.styleTextField             .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.customToyNumber     = [self.toyNumberTextField         .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.distinguishingNotes = [self.distinguishingNotesTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	
+	[self.nameTextField               resignFirstResponder];
+	[self.segmentTextField            resignFirstResponder];
+	[self.seriesTextField             resignFirstResponder];
+	[self.makeTextField               resignFirstResponder];
+	[self.colorTextField              resignFirstResponder];
+	[self.styleTextField              resignFirstResponder];
+	[self.toyNumberTextField          resignFirstResponder];
+	[self.distinguishingNotesTextView resignFirstResponder];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+	[super viewDidDisappear:animated];
+	
+	self.nameTextField.text               = self.car.name;
+	self.segmentTextField.text            = self.car.segment;
+	self.seriesTextField.text             = self.car.series;
+	self.makeTextField.text               = self.car.make;
+	self.colorTextField.text              = self.car.color;
+	self.styleTextField.text              = self.car.style;
+	self.toyNumberTextField.text          = self.car.customToyNumber;
+	self.distinguishingNotesTextView.text = self.car.distinguishingNotes;
 }
 
 
@@ -94,10 +111,9 @@
 	CGRect frame = self.scrollView.frame;
 	
 	if (willShow)
-		frame.size.height = keyboard.origin.y + 50;
+		frame.size.height = keyboard.origin.y + self.tabBarController.tabBar.frame.size.height;
 	else
 		frame.size.height = self.view.frame.size.height;
-	
 	
 	[UIView animateWithDuration:[[notification.userInfo valueForKey:@"UIKeyboardAnimationDurationUserInfoKey"] floatValue] animations:^
 	{
@@ -115,22 +131,22 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-	if(textField == self.nameTextField)
+	if (textField == self.nameTextField)
 		[self.segmentTextField becomeFirstResponder];
 	
-	else if(textField == self.segmentTextField)
+	else if (textField == self.segmentTextField)
 		[self.seriesTextField becomeFirstResponder];
 	
-	else if(textField == self.seriesTextField)
+	else if (textField == self.seriesTextField)
 		[self.makeTextField becomeFirstResponder];
 	
-	else if(textField == self.makeTextField)
+	else if (textField == self.makeTextField)
 		[self.colorTextField becomeFirstResponder];
 	
-	else if(textField == self.colorTextField)
+	else if (textField == self.colorTextField)
 		[self.styleTextField becomeFirstResponder];
 	
-	else if(textField == self.styleTextField)
+	else if (textField == self.styleTextField)
 		[self.toyNumberTextField becomeFirstResponder];
 	
 	else
@@ -143,18 +159,28 @@
 
 - (IBAction)resetButtonPressed:(id)sender
 {
-	UIAlertView *alert = [[UIAlertView alloc]initWithTitle: @"Reset"
-												   message: @"Are you sure you want to start over?"
-												  delegate: self
-										 cancelButtonTitle: @"No"
-										 otherButtonTitles: @"Yes", nil];
+	self.resetAlertView = [[UIAlertView alloc]initWithTitle: @"Reset"
+													message: @"Are you sure you want to start over?"
+												   delegate: self
+										  cancelButtonTitle: @"No"
+										  otherButtonTitles: @"Yes", nil];
 	
-	[alert show];
+	[self.resetAlertView show];
 }
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-	if (buttonIndex == 1)
-		[self reset];
+	if (alertView == self.resetAlertView)
+	{
+		if (buttonIndex == 1)
+			[self reset];
+		
+		self.resetAlertView = nil;
+	}
+	else if (alertView == self.nameMissingAlertView)
+	{
+		[self.nameTextField becomeFirstResponder];
+		self.nameMissingAlertView = nil;
+	}
 }
 
 - (void)reset
@@ -178,6 +204,17 @@
 	[self.styleTextField              resignFirstResponder];
 	[self.toyNumberTextField          resignFirstResponder];
 	[self.distinguishingNotesTextView resignFirstResponder];
+}
+
+- (void)missingName
+{
+	self.nameMissingAlertView = [[UIAlertView alloc]initWithTitle: @"Name Required"
+														  message: @"You must enter a name."
+														 delegate: self
+												cancelButtonTitle: @"OK"
+												otherButtonTitles: nil, nil];
+	
+	[self.nameMissingAlertView show];
 }
 
 

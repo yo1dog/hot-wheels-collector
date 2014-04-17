@@ -42,8 +42,6 @@
 @property                    CGImageRef    barcodeCGImage;
 @property(nonatomic, strong) UIImage      *barcodeUIImage;
 
-@property(nonatomic, weak) CarManager *carManager;
-
 @property bool addCarRequesting;
 @end
 
@@ -60,8 +58,6 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	
-	self.carManager = [CarManager getSingleton];
 	
 	// register self as listener
 	if (self.carWrapper)
@@ -95,7 +91,7 @@
 	
 	// make request
 	if (![self.carWrapper getSetCarOwnedInProgress])
-		[self.carWrapper setCarOwned:[UserManager getUserID] owned:!self.carWrapper.car.owned];
+		[self.carWrapper setCarOwned:[UserManager getLoggedInUserID] owned:!self.carWrapper.car.owned];
 }
 
 
@@ -104,30 +100,43 @@
 	if (self.addCarRequesting)
 		return;
 	
+	if (self.car.name.length == 0)
+	{
+		[self.navigationController popToRootViewControllerAnimated:true];
+		[self.addCar_InfoViewController missingName];
+		return;
+	}
+	
 	self.addCarRequesting = true;
 	
 	// show loading overlay
-	UIView *loadingView = [self showLoadingOveraly];
-	
-	[HotWheels2API addCustomCar:self.car completionHandler:^(NSError *error) {
-		dispatch_async(dispatch_get_main_queue(), ^
-		{
-			self.addCarRequesting = false;
-			[loadingView removeFromSuperview];
-			
-			if (error)
-				return;
-			
-			[self.navigationController popToRootViewControllerAnimated:true];
-			[self.addCar_InfoViewController reset];
-		});
-	}];
+	dispatch_async(dispatch_get_main_queue(), ^
+	{
+		UIView *loadingView = [self showLoadingOveraly];
+		
+		[HotWheels2API addCustomCar:self.car completionHandler:^(HotWheels2APIError *error) {
+			dispatch_async(dispatch_get_main_queue(), ^
+			{
+				self.addCarRequesting = false;
+				[loadingView removeFromSuperview];
+				
+				if (error)
+				{
+					[[error createAlert:@"Unable to Add Car"] show];
+					return;
+				}
+				
+				[self.navigationController popToRootViewControllerAnimated:true];
+				[self.addCar_InfoViewController reset];
+			});
+		}];
+	});
 }
 
 
 - (UIView *)showLoadingOveraly
 {
-	UIView *superview = self.view.window.rootViewController.view;
+	UIView *superview = self.tabBarController.view;
 	
 	UIView *loadingView = [[UIView alloc] initWithFrame:superview.bounds];
 	loadingView.backgroundColor = [UIColor clearColor];

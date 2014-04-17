@@ -78,7 +78,7 @@
 	}
 	
 	if (self.listeners.count == 0)
-		[[CarManager getSingleton] releaseCarWrapper:self];
+		[CarManager releaseCarWrapper:self];
 }
 
 
@@ -102,7 +102,7 @@
 	[HotWheels2API getImage:self.car.iconImageURL
 			  imageCacheKey:self.car._id
 			 imageIsDetails:false
-		  completionHandler:^(NSError *error, UIImage *image, bool wasCached)
+		  completionHandler:^(HotWheels2APIError *error, UIImage *image, bool wasCached)
 	{
 		self.downloadCarIconImageInProgress = false;
 		
@@ -133,7 +133,7 @@
 	[HotWheels2API getImage:self.car.detailImageURL
 			  imageCacheKey:self.car._id
 			 imageIsDetails:true
-		  completionHandler:^(NSError *error, UIImage *image, bool wasCached)
+		  completionHandler:^(HotWheels2APIError *error, UIImage *image, bool wasCached)
 	 {
 		 self.downloadCarDetailImageInProgress = false;
 		 
@@ -157,11 +157,13 @@
 	[self notifyListeners];
 	
 	// set the ownership with HW2 API
-	[HotWheels2API setCarOwned:userID carID:self.car._id owned:owned completionHandler:^(NSError *error)
+	[HotWheels2API setCarOwned:userID carID:self.car._id owned:owned completionHandler:^(HotWheels2APIError *error)
 	{
 		self.setCarOwnedInProgress = false;
 		
-		if (!error)
+		if (error)
+			[[error createAlert:@"Unable to add Car" withMessagePrefix:[NSString stringWithFormat:@"Failed to add %@ to your collection because of the following error:", self.car.name]] show];
+		else
 			self.car.owned = owned;
 		
 		// tell the listerners we are done setting the ownership

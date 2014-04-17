@@ -9,8 +9,15 @@
 #import "UserManager.h"
 
 @implementation UserManager
-+ (NSString *)getUserID
+NSString *loggedInUserID;
+
++ (void)login:(NSString *)userID
 {
-	return @"2";
+	loggedInUserID = userID;
+}
+
++ (NSString *)getLoggedInUserID
+{
+	return loggedInUserID;
 }
 @end

@@ -22,8 +22,6 @@
 @property(nonatomic, strong) UIBarButtonItem         *activityButton;
 @property(nonatomic, strong) UIActivityIndicatorView *activityView;
 
-@property(nonatomic, weak) CarManager *carManager;
-
 @property bool collectionRemovalsRequesting;
 
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
@@ -35,9 +33,6 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-	
-	// get the car manager
-	self.carManager = [CarManager getSingleton];
 	
 	// create the activity button for the navigation bar
 	self.activityView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
@@ -96,7 +91,7 @@
 	[self toggleRefreshActivity:true];
 	
 	// make the request
-	[HotWheels2API getCollectionRemovals:[UserManager getUserID] handler:^(NSError *error, NSMutableArray *cars)
+	[HotWheels2API getCollectionRemovals:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars)
 	{
 		self.collectionRemovalsRequesting = false;
 		
@@ -106,8 +101,11 @@
 			self.refreshButton.enabled = true;
 			[self toggleRefreshActivity:false];
 			
-			if (error || !cars)
+			if (error)
+			{
+				[[error createAlert:@"Unable to get Collection"] show];
 				return;
+			}
 			
 			// update screen
 			[self.carGridView setCars:cars];
@@ -124,7 +122,7 @@
 - (void)carWrapperSelected:(CarWrapper *)carWrapper
 {
 	self.selectedCarWrapper = carWrapper;
-	[self performSegueWithIdentifier:@"collectionToDetails" sender:self];
+	[self performSegueWithIdentifier:@"collectionRemovalsToDetails" sender:self];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

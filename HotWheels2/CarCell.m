@@ -147,6 +147,6 @@
 
 - (IBAction)badgeButtonPressed:(id) sender
 {
-	[self.carWrapper setCarOwned:[UserManager getUserID] owned:!self.carWrapper.car.owned];
+	[self.carWrapper setCarOwned:[UserManager getLoggedInUserID] owned:!self.carWrapper.car.owned];
 }
 @end

@@ -8,44 +8,29 @@
 
 #import "CarManager.h"
 
-@interface CarManager ()
-@property(nonatomic, strong) NSMutableDictionary *carWrappers;
-@end
-
-
 @implementation CarManager
 
-static CarManager *carManager;
-+ (CarManager *)getSingleton
+static NSMutableDictionary *carWrappers;
+
+
+
++ (void)initialize
 {
-	if (!carManager)
-		carManager = [[CarManager alloc] init];
+	[super initialize];
 	
-	return carManager;
+	carWrappers = [[NSMutableDictionary alloc] init];
 }
 
 
-
-
-- (id)init
++ (CarWrapper *)getCarWrapper:(Car *) car
 {
-	self = [super init];
-	
-	self.carWrappers = [[NSMutableDictionary alloc] init];
-	
-	return self;
-}
-
-
-- (CarWrapper *)getCarWrapper:(Car *) car
-{
-	CarWrapper *carWrapper = [self.carWrappers valueForKey:car._id];
+	CarWrapper *carWrapper = [carWrappers valueForKey:car._id];
 	
 	if (!carWrapper)
 	{
 		carWrapper = [[CarWrapper alloc] init:car];
 		
-		[self.carWrappers setValue:carWrapper forKey:car._id];
+		[carWrappers setValue:carWrapper forKey:car._id];
 	}
 	else
 	{
@@ -57,9 +42,10 @@ static CarManager *carManager;
 }
 
 
-- (void)releaseCarWrapper:(CarWrapper *) carWrapper
+// should only be called from CarWrapper
++ (void)releaseCarWrapper:(CarWrapper *) carWrapper
 {
-	[self.carWrappers removeObjectForKey:carWrapper.car._id];
+	[carWrappers removeObjectForKey:carWrapper.car._id];
 }
 
 @end

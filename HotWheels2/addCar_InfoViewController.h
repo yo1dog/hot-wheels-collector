@@ -10,4 +10,5 @@
 
 @interface addCar_InfoViewController : UIViewController
 - (void)reset;
+- (void)missingName;
 @end

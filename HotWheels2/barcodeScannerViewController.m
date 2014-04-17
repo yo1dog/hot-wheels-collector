@@ -75,8 +75,13 @@
 	
 	if (!input)
 	{
-		// TODO: Show error to user
 		NSLog(@"Error getting the device input: %@", [error localizedDescription]);
+		
+		[[[UIAlertView alloc]initWithTitle: @"Unable to Scan"
+								   message: @"Failed to create the QR code scanner."
+								  delegate: nil
+						 cancelButtonTitle: @"OK"
+						 otherButtonTitles: nil, nil] show];
 		return;
 	}
 	
@@ -143,11 +148,6 @@
 	{
 		[self.navigationController popToViewController:self.addCar_ImageBarcodeViewController animated:true];
 	});
-}
-
-- (IBAction)cancelButtonPressed:(id) sender
-{
-	[self.navigationController popToRootViewControllerAnimated:true];
 }
 
 @end

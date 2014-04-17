@@ -11,9 +11,8 @@
 
 @interface CarManager : NSObject
 
-+ (CarManager *)getSingleton;
++ (CarWrapper *)getCarWrapper:(Car *) car;
 
-- (CarWrapper *)getCarWrapper:(Car *) car;
-
-- (void)releaseCarWrapper:(CarWrapper *) carWrapper;
+// should only be called from CarWrapper
++ (void)releaseCarWrapper:(CarWrapper *) carWrapper;
 @end

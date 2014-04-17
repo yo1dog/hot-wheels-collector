@@ -10,8 +10,8 @@
 
 @interface ImageBank : NSObject
 
-+ (UIImage *)getCarError;
 + (UIImage *)getBadgeOwned;
 + (UIImage *)getBadgeUnowned;
++ (UIImage *)getCarError;
 
 @end

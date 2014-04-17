@@ -9,5 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface UserManager : NSObject
-+ (NSString *)getUserID;
++ (void)login:(NSString *)userID;
++ (NSString *)getLoggedInUserID;
 @end

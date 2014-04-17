@@ -17,7 +17,8 @@
 
 
 @property(nonatomic, weak) IBOutlet UIImageView *pictureImageView;
-@property(nonatomic, strong) UIImagePickerController *imagePicker;
+@property(nonatomic, strong) UIImagePickerController *takeImagePicker;
+@property(nonatomic, strong) UIImagePickerController *chooseImagePicker;
 
 
 @property(nonatomic, weak) IBOutlet UIView      *barcodeView;
@@ -67,6 +68,7 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 	if (self.car.barcodeData != NULL)
 		[self generateBarcode:self.car.barcodeData];
 	
+	self.zxWriter = [[ZXUPCAWriter alloc] init];
 	
 	self.pictureImageView.layer.borderWidth = 1;
 	self.pictureImageView.layer.borderColor = [UIColor blackColor].CGColor;
@@ -84,16 +86,16 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 
 
 
-- (IBAction)pickPicture:(id)sender
+- (IBAction)takePicture:(id)sender
 {
 	//[self.carPictureImageView setImage:[UIImage imageNamed:@"testDetailsCustom"]];
 	//[self barcodeRead:@"123456789012"];
 	
-	if (!self.imagePicker)
+	if (!self.takeImagePicker)
 	{
-		self.imagePicker = [[UIImagePickerController alloc] init];
-		[self.imagePicker setSourceType:UIImagePickerControllerSourceTypeCamera];
-		[self.imagePicker setDelegate:self];
+		self.takeImagePicker = [[UIImagePickerController alloc] init];
+		[self.takeImagePicker setSourceType:UIImagePickerControllerSourceTypeCamera];
+		[self.takeImagePicker setDelegate:self];
 	
 		UIView *pictureBox = [[UIView alloc] init];
 		pictureBox.layer.borderWidth = 1;
@@ -102,8 +104,8 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 		int imageWidth  = CAR_CUSTOM_IMAGE_WIDTH;
 		int imageHeight = CAR_CUSTOM_IMAGE_HEIGHT;
 		
-		int viewWidth = self.imagePicker.view.frame.size.width;
-		int viewHeight = self.imagePicker.view.frame.size.height;
+		int viewWidth = self.takeImagePicker.view.frame.size.width;
+		int viewHeight = self.takeImagePicker.view.frame.size.height;
 		
 		if (imageWidth - viewWidth > imageHeight - viewHeight)
 		{
@@ -116,12 +118,25 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 			pictureBox.frame = CGRectMake((viewWidth - scaledWidth) * 0.5, 0, scaledWidth, viewHeight);
 		}
 		
-		[self.imagePicker.view addSubview:pictureBox];
+		[self.takeImagePicker.view addSubview:pictureBox];
 	}
 	
-	[self presentViewController:self.imagePicker animated:true completion:nil];
+	[self presentViewController:self.takeImagePicker animated:true completion:nil];
 }
 
+- (IBAction)choosePicture:(id)sender
+{
+	if (!self.chooseImagePicker)
+	{
+		self.chooseImagePicker = [[UIImagePickerController alloc] init];
+		[self.chooseImagePicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+		[self.chooseImagePicker setDelegate:self];
+	}
+	
+	[self presentViewController:self.chooseImagePicker animated:true completion:nil];
+}
+
+	
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
@@ -180,10 +195,6 @@ static const int CAR_CUSTOM_IMAGE_HEIGHT = 440;
 									 [barCodeString substringWithRange:NSMakeRange(1,  5)],
 									 [barCodeString substringWithRange:NSMakeRange(6,  5)],
 									 [barCodeString substringWithRange:NSMakeRange(11, 1)]];
-	
-	
-	if (!self.zxWriter)
-		self.zxWriter = [[ZXUPCAWriter alloc] init];
 	
 	NSError *error;
 	self.barcodeZXResult = [self.zxWriter encode:barCodeString
