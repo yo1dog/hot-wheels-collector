@@ -12,8 +12,8 @@
 #import "CarWrapper.h"
 
 @interface UICarGridView () <UIScrollViewDelegate>
-@property(nonatomic, strong) NSMutableArray  *carCells;
-@property int viewCellsLength;
+@property(nonatomic, strong) NSMutableArray *carCells;
+@property(nonatomic, strong) UIButton *moreButton;
 
 @property bool shownAllCellsForFirstTime;
 @property int maxShownForFirstTimeViewTop;
@@ -32,7 +32,7 @@ int PADDING_Y = 7;
 int CELL_WIDTH  = 150;
 int CELL_HEIGHT = 130;
 int CELL_PADDING_X = 6;
-int CELL_PADDING_Y = 20;
+int CELL_PADDING_Y = 25;
 
 int VIEW_BOTTOM_PADDING = 200;
 
@@ -40,24 +40,33 @@ int VIEW_BOTTOM_PADDING = 200;
 {
     self = [super initWithCoder:decoder];
 	
-    if (self)
-	{
-		self.delegate = self;
-		self.canCancelContentTouches = true;
-		
-		self.carCells = [[NSMutableArray array] init];
-		self.topPadding = 0;
-    }
+	self.delegate = self;
+	self.canCancelContentTouches = true;
+	
+	self.carCells = [[NSMutableArray array] init];
+	self.topPadding = 0;
+	
+	self.moreButton = [UIButton buttonWithType:UIButtonTypeSystem];
+	[self.moreButton addTarget:self action:@selector(moreButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+	
+	self.moreButton.frame = CGRectMake(0, 0, 160, 30);
+	self.moreButton.titleLabel.textAlignment = NSTextAlignmentCenter;
 	
     return self;
 }
 
 - (BOOL)touchesShouldCancelInContentView:(UIView *)view
 {
-	return YES;
+	return true;
 }
 
-- (void)setCars:(NSMutableArray *) cars;
+
+
+- (void)setCars:(NSMutableArray *) cars
+{
+	[self setCars:cars showMoreButton:false];
+}
+- (void)setCars:(NSMutableArray *)cars showMoreButton:(bool)showMoreButton
 {
 	// remove all car cell subviews
 	for (CarCell *carCell in self.carCells)
@@ -70,27 +79,51 @@ int VIEW_BOTTOM_PADDING = 200;
 	self.maxShownForFirstTimeStartCellIndex = -1;
 	self.maxShownForFirstTimeLastCellIndex = 0;
 	
+	[self addCarCells:cars showMoreButton:showMoreButton];
+	[self scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:true];
+}
+
+- (void)addCars:(NSMutableArray *) cars
+{
+	[self addCars:cars showMoreButton:false];
+}
+- (void)addCars:(NSMutableArray *) cars showMoreButton:(bool) showMoreButton
+{
+	// reset
+	self.shownAllCellsForFirstTime = false;
+	self.maxShownForFirstTimeViewTop = -1;
+	self.maxShownForFirstTimeStartCellIndex = -1;
+	
+	int newContentOffsetY = 0;
+	
+	if (self.carCells.count > 0)
+	{
+		int numRows = ((int)self.carCells.count / NUM_COLS) + (self.carCells.count % NUM_COLS > 0);
+		newContentOffsetY = self.topPadding + PADDING_Y + (CELL_HEIGHT + CELL_PADDING_Y) * (numRows - 1) + CELL_HEIGHT * 0.5 - self.scrollIndicatorInsets.top;
+	}
+	
+	[self addCarCells:cars showMoreButton:showMoreButton];
+	[self setContentOffset:CGPointMake(0, MAX(MIN(newContentOffsetY, self.contentSize.height - (self.bounds.size.height - self.scrollIndicatorInsets.bottom)), 0)) animated:true];
+}
+
+- (void)addCarCells:(NSMutableArray *) cars showMoreButton:(bool) showMoreButton
+{
 	// add the new search results
-	int col = 0;
-	int row = 0;
-	int width = 0;
-	int height = 0;
+	int col = (int)self.carCells.count % NUM_COLS;
+	int row = (int)self.carCells.count / NUM_COLS;
 	for (Car *car in cars)
 	{
 		// get/add the car from/to the car manager
 		CarWrapper * carWrapper = [CarManager getCarWrapper:car];
 		
-		int x = PADDING_X + col * (CELL_WIDTH  + CELL_PADDING_X);
-		int y = PADDING_Y + row * (CELL_HEIGHT + CELL_PADDING_Y) + self.topPadding;
+		int x =                   PADDING_X + (CELL_WIDTH  + CELL_PADDING_X) * col;
+		int y = self.topPadding + PADDING_Y + (CELL_HEIGHT + CELL_PADDING_Y) * row;
 		
 		CarCell *carCell = [[CarCell alloc] initWithFrame:CGRectMake(x, y, CELL_WIDTH, CELL_HEIGHT) andCarWrapper:carWrapper];
 		[carCell addTarget:self action:@selector(cellPressed:) forControlEvents:UIControlEventTouchUpInside];
 		
 		[self.carCells addObject:carCell];
 		[self addSubview:carCell];
-		
-		width  = MAX(x + CELL_WIDTH , width );
-		height = MAX(y + CELL_HEIGHT, height);
 		
 		++col;
 		if (col == NUM_COLS)
@@ -100,7 +133,27 @@ int VIEW_BOTTOM_PADDING = 200;
 		}
 	}
 	
-	self.__contentSize = CGSizeMake(width + PADDING_X, height + PADDING_Y);
+	int numRows = ((int)self.carCells.count / NUM_COLS) + (self.carCells.count % NUM_COLS > 0);
+	int cellsWidth  = CELL_WIDTH  * NUM_COLS + CELL_PADDING_X * (NUM_COLS - 1);
+	int cellsHeight = CELL_HEIGHT * numRows  + CELL_PADDING_Y * (numRows - 1);
+	
+	if (showMoreButton)
+	{
+		self.moreButton.frame = CGRectMake(PADDING_X + ((cellsWidth - (int)self.moreButton.frame.size.width) >> 1),
+										   self.topPadding + PADDING_Y + cellsHeight + CELL_PADDING_Y,
+										   self.moreButton.frame.size.width,
+										   self.moreButton.frame.size.height);
+		self.moreButton.enabled = true;
+		[self.moreButton setTitle:@"Show More Results" forState:(UIControlStateNormal)];
+		
+		[self addSubview:self.moreButton];
+		
+		cellsHeight += CELL_PADDING_Y + self.moreButton.frame.size.height;
+	}
+	else
+		[self.moreButton removeFromSuperview];
+	
+	self.__contentSize = CGSizeMake(PADDING_X + cellsWidth, self.topPadding + PADDING_Y + cellsHeight + PADDING_Y);
 	[self setContentSize:self.__contentSize];
 	[self viewCells];
 }
@@ -172,5 +225,10 @@ int VIEW_BOTTOM_PADDING = 200;
 {
 	if (self.carGridViewDelegate)
 		[self.carGridViewDelegate carWrapperSelected:[carCell getCarWrapper]];
+}
+- (void)moreButtonPressed
+{
+	if (self.carGridViewDelegate)
+		[self.carGridViewDelegate moreButtonPressed:self.moreButton];
 }
 @end

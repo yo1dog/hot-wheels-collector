@@ -114,7 +114,7 @@
 	{
 		UIView *loadingView = [self showLoadingOveraly];
 		
-		[HotWheels2API addCustomCar:self.car completionHandler:^(HotWheels2APIError *error) {
+		[HotWheels2API addCustomCar:self.car userID:[UserManager getLoggedInUserID] addToCollection:self.addCar_InfoViewController.addToCollection completionHandler:^(HotWheels2APIError *error) {
 			dispatch_async(dispatch_get_main_queue(), ^
 			{
 				self.addCarRequesting = false;

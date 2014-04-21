@@ -32,11 +32,17 @@
 @property bool isSearchingOrAdding;
 @property bool alertShown;
 @property bool autoAdd;
+
+@property(nonatomic, strong) NSString *lastQRCodeScanned;
+@property double lastQRCodeScannedTimeInitalSeconds;
+@property double lastQRCodeScannedTimeLatestSeconds;
 @end
 
 
 
 @implementation scannerViewController
+const static int MIN_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 1;
+const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 
 - (void)didReceiveMemoryWarning
 {
@@ -48,14 +54,18 @@
 {
 	[super viewDidLoad];
 	
+	// activity
 	self.activityViewBackgroundView.backgroundColor     = [UIColor blackColor];
 	self.activityViewBackgroundView.layer.cornerRadius  = 10;
 	self.activityViewBackgroundView.layer.masksToBounds = true;
 	
+	// status
 	self.statusLabelBackgroundView.backgroundColor     = [UIColor blackColor];
 	self.statusLabelBackgroundView.layer.cornerRadius  = 10;
 	self.statusLabelBackgroundView.layer.masksToBounds = true;
 	
+	
+	// auto add message
 	self.autoAddMessageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
 																		 self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height + 10,
 																		 0, 25)];
@@ -71,10 +81,9 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	// if we have already created the scanner, and we are not searching/adding, and there is no alert being shown, and we are not already scanning, show the scanning UI
-	// note that we do not actually start scanning until view did appear
-	if (self.captureSession && !self.isSearchingOrAdding && !self.alertShown && !self.isScanning)
-		[self setUIScanning];
+	[self setUILoading];
+	if (self.videoPreviewLayer)
+		[self.videoPreviewLayer removeFromSuperlayer];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -95,7 +104,11 @@
 	{
 		// if we are not searching/adding, and there is no alert being shown, and we are not already scanning, start scanning
 		if (!self.isSearchingOrAdding && !self.alertShown && !self.isScanning)
+		{
+			[self.previewView.layer insertSublayer:self.videoPreviewLayer atIndex:0];
+			[self setUIScanning];
 			self.isScanning = true;
+		}
 	}
 }
 
@@ -113,6 +126,16 @@
 }
 
 
+
+
+- (void)setUILoading
+{
+	self.statusLabel.text = @"Loading...";
+	self.statusLabelBackgroundView.hidden = false;
+	
+	[self.activityView startAnimating];
+	self.activityViewBackgroundView.hidden = false;
+}
 
 
 - (void)setUIScanning
@@ -258,6 +281,22 @@
 	if (!self.isScanning)
 		return;
 	
+	double currentTimeSeconds = CACurrentMediaTime();
+	
+	// check if we just scanned that code recently and it hasent been too long since we first scanned that code
+	if ([qrCodeString isEqualToString:self.lastQRCodeScanned] &&
+		self.lastQRCodeScannedTimeLatestSeconds > currentTimeSeconds - MIN_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS &&
+		self.lastQRCodeScannedTimeInitalSeconds > currentTimeSeconds - MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS)
+	{
+		// update the latests last scanned time
+		self.lastQRCodeScannedTimeLatestSeconds = currentTimeSeconds;
+		return;
+	}
+	
+	self.lastQRCodeScanned = qrCodeString;
+	self.lastQRCodeScannedTimeInitalSeconds = currentTimeSeconds;
+	self.lastQRCodeScannedTimeLatestSeconds = currentTimeSeconds;
+	
 	// stop scanning and start searching/adding
 	self.isScanning = false;
 	self.isSearchingOrAdding = true;
@@ -300,6 +339,8 @@
 					else
 						[self setAutoAddMessage:@"Error Adding Car" withLevel:2];
 				}
+				else
+					[self setAutoAddMessage:@"Error Adding Car" withLevel:2];
 			}
 			else
 			{

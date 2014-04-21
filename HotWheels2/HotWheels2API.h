@@ -15,7 +15,8 @@
 
 + (void)   search:(NSString *) query
 		   userID:(NSString *) userID
-completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) handler;
+			 page:(int)        page
+completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars, int numPages)) handler;
 
 + (void)getCollection:(NSString *) userID
 	completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) handler;
@@ -42,6 +43,8 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) ha
    imageIsDetails:(bool)       imageIsDetails
 completionHandler:(void (^)(HotWheels2APIError *error, UIImage *image, bool wasCached)) handler;
 
-+ (void)addCustomCar:(Car *) car
++ (void)addCustomCar:(Car *)      car
+			  userID:(NSString *) userID
+	 addToCollection:(bool)       addToCollection
    completionHandler:(void (^)(HotWheels2APIError *error)) handler;
 @end

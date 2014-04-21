@@ -23,14 +23,15 @@ NSString *HW2_API_BASE_URL = @"http://hotwheels2.awesomebox.net/api/";
 
 + (void)   search:(NSString *) query
 		   userID:(NSString *) userID
-completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) handler
+			 page:(int)        page
+completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars, int numPages)) handler
 {
-	NSString *url = [NSString stringWithFormat:@"%@search.php?query=%@", HW2_API_BASE_URL, [HotWheels2API encodeURIComponent:query]];
+	NSString *url = [NSString stringWithFormat:@"%@search.php?query=%@&page=%i", HW2_API_BASE_URL, [HotWheels2API encodeURIComponent:query], page];
 	
 	if (userID)
 		url = [url stringByAppendingFormat:@"&userID=%@", [HotWheels2API encodeURIComponent:userID]];
 	
-	[HotWheels2API getCarListFromURL:url completionHandler:handler];
+	[HotWheels2API getCarListFromURL:url page:page completionHandler:handler];
 }
 
 
@@ -123,7 +124,7 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) ha
 						owned:(bool)       owned
 			completionHandler:(void (^)(HotWheels2APIError *error, NSString *carName, bool ownedChanged)) handler
 {
-	NSString *url = [NSString stringWithFormat:@"%@setCarOwnedFromQRCode.php", HW2_API_BASE_URL];
+	NSString *url = [NSString stringWithFormat:@"%@setCarOwnedByQRCode.php", HW2_API_BASE_URL];
 	
 	// construct the body
 	const char *httpBodyString = [[NSString stringWithFormat:@"userID=%@&qrCodeData=%@&owned=%@", [HotWheels2API encodeURIComponent:userID], [HotWheels2API encodeURIComponent:qrCodeData], owned? @"1" : @"0"] UTF8String];
@@ -155,10 +156,12 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) ha
 // Uses the Hot Wheels 2 API to add a custom car endpoint to create a new custom car.
 
 // TODO: add addToCollection option
-+ (void)addCustomCar:(Car *) car
++ (void)addCustomCar:(Car *)      car
+			  userID:(NSString *) userID
+	 addToCollection:(bool)       addToCollection
    completionHandler:(void (^)(HotWheels2APIError *)) handler
 {
-	NSString *url = [NSString stringWithFormat:@"%@addCustomCar.php", HW2_API_BASE_URL];
+	NSString *url = [NSString stringWithFormat:@"%@addCustomCar.php?userID=%@&addToCollection=%i", HW2_API_BASE_URL, [HotWheels2API encodeURIComponent:userID], addToCollection];
 	
 	NSString *boundary = @"gc0p4Jq0M2Yt08jU534c0p";
 	NSDictionary *headers = @{
@@ -167,6 +170,8 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) ha
 	
 	// build body
 	NSMutableData *body = [NSMutableData data];
+	//[HotWheels2API addMultipartParam:@"createdByUser"       paramValueString:userID                  boundary:boundary body:body];
+	//[HotWheels2API addMultipartParam:@"addToCollection"     paramValueBool:  addToCollection         boundary:boundary body:body];
 	[HotWheels2API addMultipartParam:@"name"                paramValueString:car.name                boundary:boundary body:body];
 	[HotWheels2API addMultipartParam:@"segment"             paramValueString:car.segment             boundary:boundary body:body];
 	[HotWheels2API addMultipartParam:@"series"              paramValueString:car.series              boundary:boundary body:body];
@@ -177,7 +182,7 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) ha
 	[HotWheels2API addMultipartParam:@"distinguishingNotes" paramValueString:car.distinguishingNotes boundary:boundary body:body];
 	[HotWheels2API addMultipartParam:@"barcodeData"         paramValueString:car.barcodeData         boundary:boundary body:body];
 	
-	if (!car.detailImage)
+	if (car.detailImage)
 	{
 		[body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
 		[body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n\r\n", @"carPicture", @"filename.jpeg"] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -294,6 +299,7 @@ completionHandler:(void (^)(HotWheels2APIError* error, UIImage *image, bool wasC
 // Handler will be called with an error or a list of cars, but never both.
 
 + (void)getCarListFromURL:(NSString *) url
+
 		completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars)) handler
 {
 	[HotWheels2API getJSONFromURL:url completionHandler:^(HotWheels2APIError *error, NSURLRequest *request, NSHTTPURLResponse *response, NSObject *jsonObject)
@@ -313,6 +319,52 @@ completionHandler:(void (^)(HotWheels2APIError* error, UIImage *image, bool wasC
 			[cars addObject:[[Car alloc] init:jsonObject]];
 		
 		handler(nil, cars);
+	}];
+}
+
+
+///////////////////////////
+// Get Paginated Car List From URL
+//
+// Makes an HTTP GET request to the given URL and tries to parse the response body as JSON represintation of a paginated list of cars.
+// Handler will be called with an error or a list of cars, but never both.
+
++ (void)getCarListFromURL:(NSString *) url
+					 page:(int)        page
+		completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars, int numPages)) handler
+{
+	[HotWheels2API getJSONFromURL:url completionHandler:^(HotWheels2APIError *error, NSURLRequest *request, NSHTTPURLResponse *response, NSObject *jsonObject)
+	{
+		if (error)
+			return handler(error, nil, 0);
+	 
+		// make sure we got an array back
+		if (![jsonObject isKindOfClass:[NSDictionary class]])
+			return handler([[HotWheels2APIInvalidJSONTypeError alloc] initWithRequest:request andResponse:response andJSONType:@"Array" andExpectedJSONType:@"Object"], nil, 0);
+		
+		// convert the JSON into a list of cars
+		NSDictionary *jsonResponse = (NSDictionary *)jsonObject;
+		
+		// get number of pages
+		int numPages;
+		NSObject *numPagesObject = [jsonResponse objectForKey:@"numPages"];
+		
+		if (numPagesObject == (id)[NSNull null])
+			numPages = 1;
+		else
+			numPages = [(NSNumber *)numPagesObject intValue];
+		
+		// get list of cars
+		NSMutableArray *cars = [NSMutableArray array];
+		NSArray *carObjects = [jsonResponse objectForKey:@"cars"];
+		
+		if (carObjects != (id)[NSNull null])
+		{
+			for (NSDictionary *carObject in carObjects)
+				[cars addObject:[[Car alloc] init:carObject]];
+		}
+		
+		handler(nil, cars, numPages);
 	}];
 }
 
@@ -371,7 +423,7 @@ completionHandler:(void (^)(HotWheels2APIError* error, UIImage *image, bool wasC
 	[request setHTTPMethod: httpMethod];
 	[request setHTTPBody: httpBody];
 	
-	if (!headers)
+	if (headers)
 	{
 		for (NSString* headerName in headers)
 			[request addValue:headers[headerName] forHTTPHeaderField: headerName];

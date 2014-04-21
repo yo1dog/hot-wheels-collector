@@ -131,4 +131,6 @@
 	detailsViewController *controller = (detailsViewController *)segue.destinationViewController;
 	controller.carWrapper = self.selectedCarWrapper;
 }
+
+-(void)moreButtonPressed:(UIButton *)moreButton {}
 @end

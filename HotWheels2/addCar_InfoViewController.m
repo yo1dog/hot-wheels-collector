@@ -13,6 +13,7 @@
 @interface addCar_InfoViewController () <UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate, UIAlertViewDelegate>
 @property(nonatomic, weak) IBOutlet UIScrollView *scrollView;
 
+@property(nonatomic, weak) IBOutlet UISwitch    *addToCollectionSwitch;
 @property(nonatomic, weak) IBOutlet UITextField *nameTextField;
 @property(nonatomic, weak) IBOutlet UITextField *segmentTextField;
 @property(nonatomic, weak) IBOutlet UITextField *seriesTextField;
@@ -54,13 +55,14 @@
 {
 	[super viewDidLayoutSubviews];
 	
-	self.scrollView.contentSize = CGSizeMake(320, 517);
+	self.scrollView.contentSize = CGSizeMake(320, 557);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
 	[super viewWillDisappear:animated];
 	
+	self.addToCollection         = self.addToCollectionSwitch.isOn;
 	self.car.name                = [self.nameTextField              .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.segment             = [self.segmentTextField           .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 	self.car.series              = [self.seriesTextField            .text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];

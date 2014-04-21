@@ -11,6 +11,7 @@
 
 @protocol UICarGridViewDelegate
 - (void)carWrapperSelected:(CarWrapper *) carWrapper;
+- (void)moreButtonPressed:(UIButton *) moreButton;
 @end
 
 @interface UICarGridView : UIScrollView
@@ -18,4 +19,7 @@
 @property (nonatomic, assign) id<UICarGridViewDelegate> carGridViewDelegate;
 
 - (void)setCars: (NSMutableArray *) cars;
+- (void)setCars: (NSMutableArray *) cars showMoreButton:(bool) showMoreButton;
+- (void)addCars:(NSMutableArray *) cars;
+- (void)addCars:(NSMutableArray *) cars showMoreButton:(bool) showMoreButton;
 @end

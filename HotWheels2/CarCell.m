@@ -117,7 +117,12 @@
 		[self updateUI];
 		
 		// if we downloaded the icon image, animate it in
-		if (event == CWUE_DoneDownloadingIconImage)
+		// but only if this cell is visible
+		UIScrollView *superview = (UIScrollView *)self.superview;
+		
+		if (event == CWUE_DoneDownloadingIconImage &&
+			self.frame.origin.y + self.frame.size.height > superview.contentOffset.y &&
+			self.frame.origin.y < superview.contentOffset.y + superview.frame.size.height)
 		{
 			CGRect originalFrame = self.iconImageView.frame;
 			self.iconImageView.frame = CGRectMake(-40, -10, 150, 100);
@@ -127,14 +132,14 @@
 			} completion:nil];
 			
 			
-			self.opaque = false;
-			self.alpha = 0.0f;
+			self.iconImageView.opaque = false;
+			self.iconImageView.alpha = 0.0f;
 			
 			[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionTransitionNone animations:^{
-				self.alpha = 1.0;
+				self.iconImageView.alpha = 1.0;
 			} completion:^ (BOOL finished) {
 				if (finished)
-					self.opaque = true;
+					self.iconImageView.opaque = true;
 			}];
 		}
 		

@@ -22,6 +22,11 @@
 @property(nonatomic, strong) IBOutlet UIImageView   *qrCodeImageView;
 
 @property int searchRequestNumber;
+
+@property (nonatomic, strong) NSString *searchQuery;
+@property int searchPage;
+@property int searchNumberOfPages;
+
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
 @end
 
@@ -34,6 +39,7 @@
 	
 	// init some vars
 	self.searchRequestNumber = 0;
+	self.searchPage = 0;
 	
 	// hide the activity indicator
 	[self toggleSearchBarActivity:false];
@@ -71,52 +77,55 @@
 
 
 
-- (int)startSearch
+- (void)search:(NSString *)query page:(int)page
 {
 	// TODO: cancel previous search
 	
 	// increment the search number and store it locally
 	++self.searchRequestNumber;
-	if (self.searchRequestNumber > 100)
+	if (self.searchRequestNumber > 99)
 		self.searchRequestNumber = 0;
+	
+	int searchRequestNumber = self.searchRequestNumber;
+	
 	
 	// show the activity indicator
 	[self toggleSearchBarActivity:true];
 	
-	return self.searchRequestNumber;
-}
-
-- (void)finishSearch:(int)                  searchRequestNumber
-			   error:(HotWheels2APIError *) error
-				cars:(NSMutableArray *)     cars
-{
-	// make sure the reponse is from the latest request
-	if (searchRequestNumber != self.searchRequestNumber)
-		return;
-	
-	// hide the activity indicator
-	[self toggleSearchBarActivity:false];
-	
-	if (error)
+	[HotWheels2API search:query userID:[UserManager getLoggedInUserID] page:page completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars, int numPages)
 	{
-		[[error createAlert:@"Search Failed"] show];
-		return;
-	}
-	
-	[self.carGridView setCars:cars];
-	
-	if ([cars count] > 0)
-	{
-		// hide the "no reuslts" label
-		self.noSearchResultsLabel.hidden = true;
-		
-		// scroll to the top
-		[self.carGridView setContentOffset:CGPointZero animated:false];
-	}
-	
-	// if we didn't get any results show the "no results" label
-	else
-		self.noSearchResultsLabel.hidden = false;
+		dispatch_async(dispatch_get_main_queue(), ^
+		{
+			// make sure the reponse is from the latest request
+			if (searchRequestNumber != self.searchRequestNumber)
+				return;
+			
+			// hide the activity indicator
+			[self toggleSearchBarActivity:false];
+			
+			if (error)
+			{
+				[[error createAlert:@"Search Failed"] show];
+				return;
+			}
+			
+			// set search vars
+			self.searchPage          = page;
+			self.searchNumberOfPages = numPages;
+			self.searchQuery         = query;
+			
+			// show the cars
+			if (page > 0)
+				[self.carGridView addCars:cars showMoreButton:page < numPages - 1];
+			else
+			{
+				[self.carGridView setCars:cars showMoreButton:page < numPages - 1];
+				
+				// if we didn't get any results show the "no results" label
+				self.noSearchResultsLabel.hidden = [cars count] > 0;
+			}
+		});
+	}];
 }
 
 
@@ -125,18 +134,15 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-	int searchRequestNumber = [self startSearch];
-	
-	// preform the search
-	[HotWheels2API search:searchBar.text userID:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars)
-	{
-		dispatch_async(dispatch_get_main_queue(), ^
-		{
-			[self finishSearch:searchRequestNumber error:error cars:cars];
-		});
-	}];
-	
+	[self search:searchBar.text page:0];
 	[searchBar resignFirstResponder];
+}
+- (void)moreButtonPressed:(UIButton *)moreButton
+{
+	[moreButton setTitle:@"Loading..." forState:UIControlStateNormal];
+	moreButton.enabled = false;
+	
+	[self search:self.searchQuery page:self.searchPage + 1];
 }
 
 

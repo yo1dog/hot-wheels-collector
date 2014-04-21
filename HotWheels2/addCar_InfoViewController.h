@@ -11,4 +11,6 @@
 @interface addCar_InfoViewController : UIViewController
 - (void)reset;
 - (void)missingName;
+
+@property bool addToCollection;
 @end
