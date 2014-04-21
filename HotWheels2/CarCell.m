@@ -21,8 +21,6 @@
 @property(nonatomic, strong) UIImageView             *iconImageView;
 @property(nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property(nonatomic, strong) UIButton                *badgeButton;
-
-@property bool shownForFirstTime;
 @end
 
 
@@ -79,10 +77,8 @@
 
 
 
-- (void)showForFirstTime
+- (void)viewed
 {
-	self.shownForFirstTime = true;
-	
 	if (!self.carWrapper.car.iconImage && ![self.carWrapper getDownloadCarIconImageInProgress])
 		[self.carWrapper downloadCarIconImage];
 }

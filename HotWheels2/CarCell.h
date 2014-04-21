@@ -13,6 +13,6 @@
 @interface CarCell : UIButton
 - (id)initWithFrame:(CGRect)frame andCarWrapper:(CarWrapper *) carWrapper;
 
-- (void)showForFirstTime;
+- (void)viewed;
 - (CarWrapper *)getCarWrapper;
 @end

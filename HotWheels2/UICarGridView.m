@@ -34,7 +34,7 @@ int CELL_HEIGHT = 130;
 int CELL_PADDING_X = 6;
 int CELL_PADDING_Y = 25;
 
-int VIEW_BOTTOM_PADDING = 200;
+int VIEW_PADDING = 500;
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
@@ -173,47 +173,18 @@ int VIEW_BOTTOM_PADDING = 200;
 
 - (void)viewCells
 {
-	//if (self.shownAllCellsForFirstTime)
-	//	return;
+	int viewTop = (int)self.contentOffset.y - VIEW_PADDING;
+	int viewHeight = VIEW_PADDING + (int)self.frame.size.height + VIEW_PADDING;
 	
-	// get view top
-	int viewTop = MAX((int)self.contentOffset.y, 0);
-	
-	// if we have already viewed lower than this, no point in continuing
-	//if (viewTop <= self.maxShownForFirstTimeViewTop)
-	//	return;
-	
-	//self.maxShownForFirstTimeViewTop = viewTop;
-	
-	
-	// calucalte start index
+	// calucalte start and last index
 	int i1 = ((viewTop - PADDING_Y - self.topPadding) / (CELL_HEIGHT + CELL_PADDING_Y)) * NUM_COLS;
-	
-	// if we have already shown past the first cell, no point in continuing
-	//if (i1 <= self.maxShownForFirstTimeStartCellIndex)
-	//	return;
-	
-	//self.maxShownForFirstTimeStartCellIndex = i1;
-	
-	
-	// calculate the last index
-	int viewHeight = (int)self.frame.size.height + VIEW_BOTTOM_PADDING;
 	int i2 = i1 + (viewHeight / (CELL_HEIGHT + CELL_PADDING_Y) + 1) * NUM_COLS;
 	
-	if (i2 >= self.carCells.count)
-	{
-		i2 = (int)self.carCells.count;
-		//self.shownAllCellsForFirstTime = true;
-	}
+	// clamp these values. we have to clamp i1 AFTER we use it to calculate i2, otherwise the height would be offset if i1 < 0
+	i1 = MAX(i1, 0);
+	i2 = MIN(i2, self.carCells.count);
 	
-	// if we have already shown past the last cell, no point in continuing
-	//if (i2 <= self.maxShownForFirstTimeLastCellIndex)
-	//	return;
-	
-	
-	//NSLog(@"%i\t%i - %i/%i", viewTop, self.maxShownForFirstTimeLastCellIndex + 1, i2, (int)self.carCells.count);
-	
-	// show all cells from the last cell we have shown (exclusive) to the last visibile cell (inclusive)
+	// show all visible cells
 	for (int i = 0; i < self.carCells.count; ++i)
 	{
 		CarCell *carCell = self.carCells[i];
@@ -222,6 +193,8 @@ int VIEW_BOTTOM_PADDING = 200;
 		{
 			if (!carCell.superview)
 				[self addSubview:carCell];
+			
+			[carCell viewed];
 		}
 		else
 		{
@@ -229,13 +202,8 @@ int VIEW_BOTTOM_PADDING = 200;
 				[carCell removeFromSuperview];
 		}
 	}
-	
-	
-	for (int i = self.maxShownForFirstTimeLastCellIndex; i < i2; ++i)
-		[self.carCells[i] showForFirstTime];
-	
-	self.maxShownForFirstTimeLastCellIndex = i2;
 }
+
 
 
 - (void)cellPressed:(CarCell *)carCell

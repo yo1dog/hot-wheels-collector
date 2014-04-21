@@ -21,8 +21,8 @@ static NSCache *detailsImageCache;
 	iconImageCache    = [[NSCache alloc] init];
 	detailsImageCache = [[NSCache alloc] init];
 	
-	[iconImageCache    setTotalCostLimit:200 * 1024 * 1024];
-	[detailsImageCache setTotalCostLimit:50  * 1024 * 1024];
+	//[iconImageCache    setTotalCostLimit:200 * 1024 * 1024];
+	//[detailsImageCache setTotalCostLimit:50  * 1024 * 1024];
 }
 
 + (UIImage *)getImage:(NSString *) imageCacheKey
