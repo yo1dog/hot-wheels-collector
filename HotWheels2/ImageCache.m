@@ -7,34 +7,39 @@
 //
 
 #import "ImageCache.h"
+#import <malloc/malloc.h>
 
 @implementation ImageCache
 
-static NSMutableDictionary *iconImageCache;
-static NSMutableDictionary *detailsImageCache;
+static NSCache *iconImageCache;
+static NSCache *detailsImageCache;
 
 + (void)initialize
 {
 	[super initialize];
 	
-	iconImageCache    = [[NSMutableDictionary alloc] init];
-	detailsImageCache = [[NSMutableDictionary alloc] init];
+	iconImageCache    = [[NSCache alloc] init];
+	detailsImageCache = [[NSCache alloc] init];
+	
+	[iconImageCache    setTotalCostLimit:200 * 1024 * 1024];
+	[detailsImageCache setTotalCostLimit:50  * 1024 * 1024];
 }
 
 + (UIImage *)getImage:(NSString *) imageCacheKey
 	   imageIsDetails:(bool)       imageIsDetails
 {
-	// TODO: add wieghts and times to chached images so we don't run out of memory
-	return (UIImage *)[(imageIsDetails? detailsImageCache : iconImageCache) valueForKey:imageCacheKey];
+	return (UIImage *)[(imageIsDetails? detailsImageCache : iconImageCache) objectForKey:imageCacheKey];
 }
 
 + (void)cacheImage:(UIImage *)  image
 		   withKey:(NSString *) key
 	imageIsDetails:(bool)       imageIsDetails
 {
-	[(imageIsDetails? detailsImageCache : iconImageCache) setValue:image forKey:key];
+	[(imageIsDetails? detailsImageCache : iconImageCache) setObject:image forKey:key];
 }
 @end
+
+// todo: smarter caching
 
 /*@interface CachedImage
 @property (nonatomic, strong) UIImage *image;

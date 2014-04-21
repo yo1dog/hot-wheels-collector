@@ -123,7 +123,7 @@ int VIEW_BOTTOM_PADDING = 200;
 		[carCell addTarget:self action:@selector(cellPressed:) forControlEvents:UIControlEventTouchUpInside];
 		
 		[self.carCells addObject:carCell];
-		[self addSubview:carCell];
+		//[self addSubview:carCell];
 		
 		++col;
 		if (col == NUM_COLS)
@@ -173,27 +173,27 @@ int VIEW_BOTTOM_PADDING = 200;
 
 - (void)viewCells
 {
-	if (self.shownAllCellsForFirstTime)
-		return;
+	//if (self.shownAllCellsForFirstTime)
+	//	return;
 	
 	// get view top
 	int viewTop = MAX((int)self.contentOffset.y, 0);
 	
 	// if we have already viewed lower than this, no point in continuing
-	if (viewTop <= self.maxShownForFirstTimeViewTop)
-		return;
+	//if (viewTop <= self.maxShownForFirstTimeViewTop)
+	//	return;
 	
-	self.maxShownForFirstTimeViewTop = viewTop;
+	//self.maxShownForFirstTimeViewTop = viewTop;
 	
 	
 	// calucalte start index
 	int i1 = ((viewTop - PADDING_Y - self.topPadding) / (CELL_HEIGHT + CELL_PADDING_Y)) * NUM_COLS;
 	
 	// if we have already shown past the first cell, no point in continuing
-	if (i1 <= self.maxShownForFirstTimeStartCellIndex)
-		return;
+	//if (i1 <= self.maxShownForFirstTimeStartCellIndex)
+	//	return;
 	
-	self.maxShownForFirstTimeStartCellIndex = i1;
+	//self.maxShownForFirstTimeStartCellIndex = i1;
 	
 	
 	// calculate the last index
@@ -203,17 +203,34 @@ int VIEW_BOTTOM_PADDING = 200;
 	if (i2 >= self.carCells.count)
 	{
 		i2 = (int)self.carCells.count;
-		self.shownAllCellsForFirstTime = true;
+		//self.shownAllCellsForFirstTime = true;
 	}
 	
 	// if we have already shown past the last cell, no point in continuing
-	if (i2 <= self.maxShownForFirstTimeLastCellIndex)
-		return;
+	//if (i2 <= self.maxShownForFirstTimeLastCellIndex)
+	//	return;
 	
 	
 	//NSLog(@"%i\t%i - %i/%i", viewTop, self.maxShownForFirstTimeLastCellIndex + 1, i2, (int)self.carCells.count);
 	
 	// show all cells from the last cell we have shown (exclusive) to the last visibile cell (inclusive)
+	for (int i = 0; i < self.carCells.count; ++i)
+	{
+		CarCell *carCell = self.carCells[i];
+		
+		if (i >= i1 && i < i2)
+		{
+			if (!carCell.superview)
+				[self addSubview:carCell];
+		}
+		else
+		{
+			if (carCell.superview)
+				[carCell removeFromSuperview];
+		}
+	}
+	
+	
 	for (int i = self.maxShownForFirstTimeLastCellIndex; i < i2; ++i)
 		[self.carCells[i] showForFirstTime];
 	
