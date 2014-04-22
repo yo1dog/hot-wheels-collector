@@ -11,7 +11,7 @@
 #import "CarWrapperListener.h"
 
 @interface CarCell : UIButton
-- (id)initWithFrame:(CGRect)frame andCarWrapper:(CarWrapper *) carWrapper;
+- (id)initWithCarWrapper:(CarWrapper *) carWrapper;
 
 - (void)viewed;
 - (CarWrapper *)getCarWrapper;

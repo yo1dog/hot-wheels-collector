@@ -26,15 +26,9 @@
 
 @implementation CarCell
 
-- (id)initWithFrame:(CGRect)frame andCarWrapper:(CarWrapper *) carWrapper
+- (id)init
 {
-    self = [super initWithFrame:frame];
-	
-	self.carWrapper = carWrapper;
-	
-	// register self as a listener
-	[self.carWrapper registerListenerDelegate:self];
-	
+	self = [super init];
 	
 	// icon image
 	self.iconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 10, 150, 100)];
@@ -64,6 +58,15 @@
 	[self addSubview:self.nameLabel];
 	[self addSubview:self.activityIndicatorView];
 	[self addSubview:self.badgeButton];
+	
+	return self;
+}
+- (id)initWithCarWrapper:(CarWrapper *) carWrapper
+{
+	self = [self init];
+	
+	self.carWrapper = carWrapper;
+	[self.carWrapper registerListenerDelegate:self];
 	
 	[self updateUI];
 	
