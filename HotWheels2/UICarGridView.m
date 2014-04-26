@@ -77,7 +77,6 @@ int VIEW_PADDING = 500;
 	[self originizeCarCells];
 	[self originizeMoreButton:showMoreButton];
 	
-	[self scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:false];
 	[self viewCells];
 }
 

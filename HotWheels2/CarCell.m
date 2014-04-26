@@ -111,39 +111,34 @@
 
 - (void)carWrapperUpdated:(CarWrapper *)carWrapper event:(CarWrapperUpdatedEvent)event
 {
-	dispatch_async(dispatch_get_main_queue(), ^
+	[self updateUI];
+	
+	// if we downloaded the icon image, animate it in
+	// but only if this cell is visible
+	UIScrollView *superview = (UIScrollView *)self.superview;
+	
+	if (event == CWUE_DoneDownloadingIconImage &&
+		self.frame.origin.y + self.frame.size.height > superview.contentOffset.y &&
+		self.frame.origin.y < superview.contentOffset.y + superview.frame.size.height)
 	{
-		[self updateUI];
+		CGRect originalFrame = self.iconImageView.frame;
+		self.iconImageView.frame = CGRectMake(-40, -10, 150, 100);
 		
-		// if we downloaded the icon image, animate it in
-		// but only if this cell is visible
-		UIScrollView *superview = (UIScrollView *)self.superview;
+		[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionTransitionNone animations:^{
+			self.iconImageView.frame = originalFrame;
+		} completion:nil];
 		
-		if (event == CWUE_DoneDownloadingIconImage &&
-			self.frame.origin.y + self.frame.size.height > superview.contentOffset.y &&
-			self.frame.origin.y < superview.contentOffset.y + superview.frame.size.height)
-		{
-			CGRect originalFrame = self.iconImageView.frame;
-			self.iconImageView.frame = CGRectMake(-40, -10, 150, 100);
-			
-			[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionTransitionNone animations:^{
-				self.iconImageView.frame = originalFrame;
-			} completion:nil];
-			
-			
-			self.iconImageView.opaque = false;
-			self.iconImageView.alpha = 0.0f;
-			
-			[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionTransitionNone animations:^{
-				self.iconImageView.alpha = 1.0;
-			} completion:^ (BOOL finished) {
-				if (finished)
-					self.iconImageView.opaque = true;
-			}];
-		}
 		
-		[self setNeedsDisplay];
-	});
+		self.iconImageView.opaque = false;
+		self.iconImageView.alpha = 0.0f;
+		
+		[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionTransitionNone animations:^{
+			self.iconImageView.alpha = 1.0;
+		} completion:^ (BOOL finished) {
+			if (finished)
+				self.iconImageView.opaque = true;
+		}];
+	}
 }
 
 

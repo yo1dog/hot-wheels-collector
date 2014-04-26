@@ -96,23 +96,20 @@
 		self.collectionRemovalsRequesting = false;
 		
 		// enable the refresh button and hide the activity indicator
-		dispatch_async(dispatch_get_main_queue(), ^
+		self.refreshButton.enabled = true;
+		[self toggleRefreshActivity:false];
+		
+		if (error)
 		{
-			self.refreshButton.enabled = true;
-			[self toggleRefreshActivity:false];
-			
-			if (error)
-			{
-				[[error createAlert:@"Unable to get Collection"] show];
-				return;
-			}
-			
-			// update screen
-			[self.carGridView setCars:cars];
-			
-			// show the "no removals" label if did not get any results
-			self.emptyCollectionRemovalsLabel.hidden = cars.count > 0;
-		});
+			[[error createAlert:@"Unable to get Collection"] show];
+			return;
+		}
+		
+		// update screen
+		[self.carGridView setCars:cars];
+		
+		// show the "no removals" label if did not get any results
+		self.emptyCollectionRemovalsLabel.hidden = cars.count > 0;
 	}];
 }
 

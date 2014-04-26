@@ -115,27 +115,22 @@
 	self.addCarRequesting = true;
 	
 	// show loading overlay
-	dispatch_async(dispatch_get_main_queue(), ^
-	{
-		UIView *loadingView = [self showLoadingOveraly];
+	UIView *loadingView = [self showLoadingOveraly];
 		
-		[HotWheels2API addCustomCar:self.car userID:[UserManager getLoggedInUserID] addToCollection:self.addCar_InfoViewController.addToCollection completionHandler:^(HotWheels2APIError *error) {
-			dispatch_async(dispatch_get_main_queue(), ^
-			{
-				self.addCarRequesting = false;
-				[loadingView removeFromSuperview];
-				
-				if (error)
-				{
-					[[error createAlert:@"Unable to Add Car"] show];
-					return;
-				}
-				
-				[self.navigationController popToRootViewControllerAnimated:true];
-				[self.addCar_InfoViewController reset];
-			});
-		}];
-	});
+	[HotWheels2API addCustomCar:self.car userID:[UserManager getLoggedInUserID] addToCollection:self.addCar_InfoViewController.addToCollection completionHandler:^(HotWheels2APIError *error)
+	{
+		self.addCarRequesting = false;
+		[loadingView removeFromSuperview];
+		
+		if (error)
+		{
+			[[error createAlert:@"Unable to Add Car"] show];
+			return;
+		}
+		
+		[self.navigationController popToRootViewControllerAnimated:true];
+			[self.addCar_InfoViewController reset];
+	}];
 }
 
 
@@ -175,10 +170,7 @@
 
 - (void)carWrapperUpdated:(CarWrapper *) carWrapper event:(CarWrapperUpdatedEvent)event
 {
-	dispatch_async(dispatch_get_main_queue(), ^
-	{
-		[self updateUI];
-	});
+	[self updateUI];
 }
 
 

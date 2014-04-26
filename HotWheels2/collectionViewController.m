@@ -15,7 +15,7 @@
 #import "UserManager.h"
 
 @interface collectionViewController () <UICarGridViewDelegate>
-@property(nonatomic, strong) IBOutlet UIBarButtonItem    *refreshButton;
+@property(nonatomic, strong) IBOutlet UIBarButtonItem *refreshButton;
 @property(nonatomic, strong) IBOutlet UICarGridView   *carGridView;
 @property(nonatomic, strong) IBOutlet UILabel         *emptyCollectionLabel;
 
@@ -103,25 +103,22 @@
 		self.collectionRequesting = false;
 		
 		// enable the refresh button and hide the activity indicator
-		dispatch_async(dispatch_get_main_queue(), ^
-		{
-			self.refreshButton.enabled = true;
-			[self toggleRefreshActivity:false];
-			
-			if (error)
-			{
-				[[error createAlert:@"Unable to get Collection"] show];
-				return;
-			}
+		self.refreshButton.enabled = true;
+		[self toggleRefreshActivity:false];
 		
-			// update screen
-			[self.carGridView setCars:cars];
-			
-			self.navigationItem.title = [NSString stringWithFormat:@"Collection (%i)", (int)cars.count];
-			
-			// show the "empty collection" label if did not get any results
-			self.emptyCollectionLabel.hidden = cars.count > 0;
-		});
+		if (error)
+		{
+			[[error createAlert:@"Unable to get Collection"] show];
+			return;
+		}
+	
+		// update screen
+		[self.carGridView setCars:cars];
+		
+		self.navigationItem.title = [NSString stringWithFormat:@"Collection (%i)", (int)cars.count];
+		
+		// show the "empty collection" label if did not get any results
+		self.emptyCollectionLabel.hidden = cars.count > 0;
 	 }];
 }
 

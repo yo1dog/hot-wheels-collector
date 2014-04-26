@@ -5,3 +5,4 @@ Queue image downlaod calls
 search should include other fields
 autoadd messages need to line-break
 remove uneeded dispatch_main_queue
+refresh collection should not go back to top

@@ -94,37 +94,35 @@
 	
 	[HotWheels2API search:query userID:[UserManager getLoggedInUserID] page:page completionHandler:^(HotWheels2APIError *error, NSMutableArray *cars, int numPages)
 	{
-		dispatch_async(dispatch_get_main_queue(), ^
+		// make sure the reponse is from the latest request
+		if (searchRequestNumber != self.searchRequestNumber)
+			return;
+		
+		// hide the activity indicator
+		[self toggleSearchBarActivity:false];
+		
+		if (error)
 		{
-			// make sure the reponse is from the latest request
-			if (searchRequestNumber != self.searchRequestNumber)
-				return;
+			[[error createAlert:@"Search Failed"] show];
+			return;
+		}
+		
+		// set search vars
+		self.searchPage          = page;
+		self.searchNumberOfPages = numPages;
+		self.searchQuery         = query;
+		
+		// show the cars
+		if (page > 0)
+			[self.carGridView addCars:cars showMoreButton:page < numPages - 1];
+		else
+		{
+			[self.carGridView setCars:cars showMoreButton:page < numPages - 1];
+			[self.carGridView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:false];
 			
-			// hide the activity indicator
-			[self toggleSearchBarActivity:false];
-			
-			if (error)
-			{
-				[[error createAlert:@"Search Failed"] show];
-				return;
-			}
-			
-			// set search vars
-			self.searchPage          = page;
-			self.searchNumberOfPages = numPages;
-			self.searchQuery         = query;
-			
-			// show the cars
-			if (page > 0)
-				[self.carGridView addCars:cars showMoreButton:page < numPages - 1];
-			else
-			{
-				[self.carGridView setCars:cars showMoreButton:page < numPages - 1];
-				
-				// if we didn't get any results show the "no results" label
-				self.noSearchResultsLabel.hidden = [cars count] > 0;
-			}
-		});
+			// if we didn't get any results show the "no results" label
+			self.noSearchResultsLabel.hidden = [cars count] > 0;
+		}
 	}];
 }
 

@@ -20,6 +20,7 @@
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView *activityView;
 @property(nonatomic, strong) IBOutlet UIView                  *activityViewBackgroundView;
 
+@property(nonatomic, strong) UIView  *autoAddMessageView;
 @property(nonatomic, strong) UILabel *autoAddMessageLabel;
 
 @property(nonatomic, strong) AVCaptureSession           *captureSession;
@@ -66,17 +67,23 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 	
 	
 	// auto add message
-	self.autoAddMessageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
-																		 self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height + 10,
-																		 0, 25)];
-	self.autoAddMessageLabel.opaque = false;
+	//self.autoAddMessageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,
+	//																	 self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height + 10,
+	//																	 0, 25)];
+	
+	self.autoAddMessageView = [[UIView alloc] init];
+	self.autoAddMessageView.opaque = false;
+	self.autoAddMessageView.layer.cornerRadius  = 12;
+	self.autoAddMessageView.layer.masksToBounds = true;
+	
+	self.autoAddMessageLabel = [[UILabel alloc] init];
 	self.autoAddMessageLabel.font = [UIFont systemFontOfSize:15.0f];
-	self.autoAddMessageLabel.textAlignment = NSTextAlignmentCenter;
+	self.autoAddMessageLabel.textAlignment = NSTextAlignmentRight;
+	self.autoAddMessageLabel.lineBreakMode = NSLineBreakByWordWrapping;
+	self.autoAddMessageLabel.numberOfLines = 0;
 	
-	self.autoAddMessageLabel.layer.cornerRadius  = 12;
-	self.autoAddMessageLabel.layer.masksToBounds = true;
-	
-	[self.view addSubview:self.autoAddMessageLabel];
+	[self.autoAddMessageView addSubview:self.autoAddMessageLabel];
+	[self.view addSubview:self.autoAddMessageView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -172,16 +179,19 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 }
 
 
-
+- (IBAction)textChanged:(UITextField *)sender
+{
+	[self setAutoAddMessage:sender.text];
+}
 - (void)setAutoAddMessage:(NSString *) message
 {
 	[self setAutoAddMessage:message withLevel:0];
 }
 - (void)setAutoAddMessage:(NSString *) message withLevel:(int) level
 {
-	[self.autoAddMessageLabel.layer removeAllAnimations];
+	[self.autoAddMessageView.layer removeAllAnimations];
 	
-	self.autoAddMessageLabel.alpha = 1.0f;
+	self.autoAddMessageView.alpha = 1.0f;
 	self.autoAddMessageLabel.text = message;
 	
 	UIColor *backgroundColor;
@@ -192,16 +202,23 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 	else
 		backgroundColor = [UIColor colorWithRed:1.0f green:( 28 / 255.0f) blue:(44 / 255.0f) alpha:1.0f];
 	
-	self.autoAddMessageLabel.backgroundColor = backgroundColor;
+	self.autoAddMessageView.backgroundColor = backgroundColor;
 	
-	float width = [self.autoAddMessageLabel.text sizeWithAttributes:@{NSFontAttributeName: self.autoAddMessageLabel.font}].width + 20;
-	self.autoAddMessageLabel.frame = CGRectMake(self.view.frame.size.width - width - 10,
-												self.autoAddMessageLabel.frame.origin.y,
-												width,
-												self.autoAddMessageLabel.frame.size.height);
+	int maxWidth = self.view.frame.size.width - 20 - 10 - 10;
+	CGRect textRect = [self.autoAddMessageLabel.text boundingRectWithSize: CGSizeMake(maxWidth, CGFLOAT_MAX)
+																  options: (NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+															   attributes: @{NSFontAttributeName: self.autoAddMessageLabel.font}
+																  context: nil];
+	
+	int width = MIN((int)textRect.size.width, maxWidth);
+	int height = (int)textRect.size.height + 10;
+	
+	self.autoAddMessageView.frame = CGRectMake(self.view.frame.size.width - width - 30, 100, width + 20, height + 2);
+	self.autoAddMessageLabel.frame = CGRectMake(10, 0, width + 1, height);
+	
 	
 	[UIView animateWithDuration:0.5f delay:3.0f options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionTransitionNone animations:^{
-		self.autoAddMessageLabel.alpha = 0.0f;
+		self.autoAddMessageView.alpha = 0.0f;
 	} completion:nil];
 }
 
@@ -328,13 +345,10 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 						message = @"Invalid QR Code";
 				}
 				
-				dispatch_async(dispatch_get_main_queue(), ^
-				{
-					[self setAutoAddMessage:message ?: @"Error Adding Car" withLevel:2];
-					
-					[self setUIScanning];
-					self.isScanning = true;
-				});
+				[self setAutoAddMessage:message ?: @"Error Adding Car" withLevel:2];
+				
+				[self setUIScanning];
+				self.isScanning = true;
 				
 				return;
 			}
@@ -348,23 +362,20 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 			{
 				self.isSearchingOrAdding = false;
 				
-				dispatch_async(dispatch_get_main_queue(), ^
-				{
-					if (error)
-						[self setAutoAddMessage:[NSString stringWithFormat:@"Error Adding %@", carWrapper.car.name] withLevel:2];
-					else if (setCarOwnedInProgress)
-						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Adding or Removing Already"] withLevel:1];
-					else if (alreadyOwned)
-						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Already Owned"] withLevel:1];
-					else
-						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Added"] withLevel:0];
-					
-					[self setUIScanning];
-					self.isScanning = true;
-					
-					// done with wrapper
-					[carWrapper checkForRelease];
-				});
+				if (error)
+					[self setAutoAddMessage:[NSString stringWithFormat:@"Error Adding %@", carWrapper.car.name] withLevel:2];
+				else if (setCarOwnedInProgress)
+					[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Adding or Removing Already"] withLevel:1];
+				else if (alreadyOwned)
+					[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Already Owned"] withLevel:1];
+				else
+					[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Added"] withLevel:0];
+				
+				[self setUIScanning];
+				self.isScanning = true;
+				
+				// done with wrapper
+				[carWrapper checkForRelease];
 			}];
 		}];
 	}
@@ -378,11 +389,8 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 			// if we are ignoring responses, just go back to scanning
 			if (self.ignoreSearchOrAddResponse)
 			{
-				dispatch_async(dispatch_get_main_queue(), ^
-				{
-					[self setUIScanning];
-					self.isScanning = true;
-				});
+				[self setUIScanning];
+				self.isScanning = true;
 				
 				return;
 			}
@@ -390,48 +398,44 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 			// if we got an error, show an alert and wait from them to dismiss it before scanning again
 			if (error)
 			{
-				dispatch_async(dispatch_get_main_queue(), ^
-				{
-					// hide the label and the activity idicator
-					[self setUIAlert];
-					
-					// show an alert
-					UIAlertView *alertView;
-					
-					if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
-					{
-						int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
-						
-						if (statusCode == 404)
-						{
-							alertView = [[UIAlertView alloc]initWithTitle: @"Car Not Found"
-																  message: @"We were unable to find a car from the QR code you scanned."
-																 delegate: self
-														cancelButtonTitle: @"OK"
-														otherButtonTitles: nil, nil];
-						}
-						else if (statusCode == 400)
-						{
-							alertView = [[UIAlertView alloc]initWithTitle: @"Invalid QR Code"
-																  message: @"The QR Code you scanned is not a Hot Wheels Car QR code."
-																 delegate: self
-														cancelButtonTitle: @"OK"
-														otherButtonTitles: nil, nil];
-						}
-					}
-					
-					if (!alertView)
-					{
-						alertView = [error createAlert:@"Search Failed"];
-						alertView.delegate = self;
-					}
-					
-					[alertView show];
-					self.alertShown = true;
-					
-					// don't start scanning again until they dismiss the error
-				});
+				// hide the label and the activity idicator
+				[self setUIAlert];
 				
+				// show an alert
+				UIAlertView *alertView;
+				
+				if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
+				{
+					int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
+					
+					if (statusCode == 404)
+					{
+						alertView = [[UIAlertView alloc]initWithTitle: @"Car Not Found"
+															  message: @"We were unable to find a car from the QR code you scanned."
+															 delegate: self
+													cancelButtonTitle: @"OK"
+													otherButtonTitles: nil, nil];
+					}
+					else if (statusCode == 400)
+					{
+						alertView = [[UIAlertView alloc]initWithTitle: @"Invalid QR Code"
+															  message: @"The QR Code you scanned is not a Hot Wheels Car QR code."
+															 delegate: self
+													cancelButtonTitle: @"OK"
+													otherButtonTitles: nil, nil];
+					}
+				}
+				
+				if (!alertView)
+				{
+					alertView = [error createAlert:@"Search Failed"];
+					alertView.delegate = self;
+				}
+				
+				[alertView show];
+				self.alertShown = true;
+				
+				// don't start scanning again until they dismiss the error
 				return;
 			}
 			
@@ -442,10 +446,7 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 			self.qrCodeCarWrapper = carWrapper;
 			
 			// go to details page
-			dispatch_async(dispatch_get_main_queue(), ^
-			{
-				[self performSegueWithIdentifier:@"scannerToDetails" sender:self];
-			});
+			[self performSegueWithIdentifier:@"scannerToDetails" sender:self];
 			
 			// don't start scanning again until they come back
 		 }];

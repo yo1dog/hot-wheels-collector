@@ -431,9 +431,6 @@ completionHandler:(void (^)(HotWheels2APIError* error, UIImage *image, bool wasC
 	
     [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
 	{
-		if ([urlStr rangeOfString:@"setCarOwned"].location != NSNotFound)
-			sleep(10);
-		
 		dispatch_async(dispatch_get_main_queue(), ^
 		{
 			if (error)
