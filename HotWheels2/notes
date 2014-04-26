@@ -3,3 +3,5 @@ tap to view detail image in portait
 Change badge to better add/remove method... maybe label background color?
 Queue image downlaod calls
 search should include other fields
+autoadd messages need to line-break
+remove uneeded dispatch_main_queue

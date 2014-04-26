@@ -308,16 +308,30 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 	
 	if (self.autoAdd)
 	{
-		[HotWheels2API setCarOwnedFromQRCode:[UserManager getLoggedInUserID] qrCodeData:qrCodeString owned:true completionHandler:^(HotWheels2APIError *error, NSString *carName, bool ownedChanged)
+		// find the car by QRCode
+		[HotWheels2API getCarFromQRCode:qrCodeString userID:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, Car *car)
 		{
-			// we are no longer adding
-			self.isSearchingOrAdding = false;
-			
-			// if we are ignoring responses, just go back to scanning
-			if (self.ignoreSearchOrAddResponse)
+			// if we got an error back, show the correct response
+			if (error)
 			{
+				self.isSearchingOrAdding = false;
+				
+				NSString *message;
+				
+				if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
+				{
+					int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
+					
+					if (statusCode == 404)
+						message = @"Car Not Found";
+					else if (statusCode == 400)
+						message = @"Invalid QR Code";
+				}
+				
 				dispatch_async(dispatch_get_main_queue(), ^
 				{
+					[self setAutoAddMessage:message ?: @"Error Adding Car" withLevel:2];
+					
 					[self setUIScanning];
 					self.isScanning = true;
 				});
@@ -325,33 +339,33 @@ const static int MAX_DELAY_BETWEEN_SAME_QR_CODE_SCAN_SECONDS = 5;
 				return;
 			}
 			
-			// if we got an error back, show the correct response
-			if (error)
-			{
-				if ([error isMemberOfClass:HotWheels2APIInvalidHTTPStatusCodeError.class])
-				{
-					int statusCode = (int)[(HotWheels2APIInvalidHTTPStatusCodeError *)error getResponse].statusCode;
-					
-					if (statusCode == 404)
-						[self setAutoAddMessage:@"Car Not Found" withLevel:2];
-					else if (statusCode == 400)
-						[self setAutoAddMessage:@"Invalid QR Code" withLevel:2];
-					else
-						[self setAutoAddMessage:@"Error Adding Car" withLevel:2];
-				}
-				else
-					[self setAutoAddMessage:@"Error Adding Car" withLevel:2];
-			}
-			else
-			{
-				if (ownedChanged)
-					[self setAutoAddMessage:[carName stringByAppendingString:@" Added"] withLevel:0];
-				else
-					[self setAutoAddMessage:[carName stringByAppendingString:@" Already Owned"] withLevel:1];
-			}
+			// get the wrapper for the car
+			// DONT FORGOT TO CHECK FOR RELEASE WHEN YOU ARE DONE
+			__weak CarWrapper *carWrapper = [CarManager getCarWrapper:car];
 			
-			[self setUIScanning];
-			self.isScanning = true;
+			// set the car as owned
+			[carWrapper setCarOwned:[UserManager getLoggedInUserID] completionHandler:^(HotWheels2APIError *error, bool setCarOwnedInProgress, bool alreadyOwned)
+			{
+				self.isSearchingOrAdding = false;
+				
+				dispatch_async(dispatch_get_main_queue(), ^
+				{
+					if (error)
+						[self setAutoAddMessage:[NSString stringWithFormat:@"Error Adding %@", carWrapper.car.name] withLevel:2];
+					else if (setCarOwnedInProgress)
+						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Adding or Removing Already"] withLevel:1];
+					else if (alreadyOwned)
+						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Already Owned"] withLevel:1];
+					else
+						[self setAutoAddMessage:[carWrapper.car.name stringByAppendingString:@" Added"] withLevel:0];
+					
+					[self setUIScanning];
+					self.isScanning = true;
+					
+					// done with wrapper
+					[carWrapper checkForRelease];
+				});
+			}];
 		}];
 	}
 	else

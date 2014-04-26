@@ -100,7 +100,7 @@
 	
 	[self.iconImageView setImage:self.carWrapper.car.iconImage];
 	
-	[self.badgeButton setImage:self.carWrapper.car.owned ? [ImageBank getBadgeOwned] : [ImageBank getBadgeUnowned] forState:UIControlStateNormal];
+	[self.badgeButton setImage:[self.carWrapper.car isOwned] ? [ImageBank getBadgeOwned] : [ImageBank getBadgeUnowned] forState:UIControlStateNormal];
 	self.badgeButton.alpha = [self.carWrapper getSetCarOwnedInProgress]? 0.5f : 1.0f;
 	
 	if ([self.carWrapper getDownloadCarIconImageInProgress])
@@ -151,6 +151,12 @@
 
 - (IBAction)badgeButtonPressed:(id) sender
 {
-	[self.carWrapper setCarOwned:[UserManager getLoggedInUserID] owned:!self.carWrapper.car.owned];
+	if (![self.carWrapper getSetCarOwnedInProgress])
+	{
+		if ([self.carWrapper.car isOwned])
+			[self.carWrapper setCarUnowned:[UserManager getLoggedInUserID]];
+		else
+			[self.carWrapper setCarOwned:[UserManager getLoggedInUserID]];
+	}
 }
 @end

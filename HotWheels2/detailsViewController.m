@@ -91,7 +91,12 @@
 	
 	// make request
 	if (![self.carWrapper getSetCarOwnedInProgress])
-		[self.carWrapper setCarOwned:[UserManager getLoggedInUserID] owned:!self.carWrapper.car.owned];
+	{
+		if ([self.carWrapper.car isOwned])
+			[self.carWrapper setCarUnowned:[UserManager getLoggedInUserID]];
+		else
+			[self.carWrapper setCarOwned:[UserManager getLoggedInUserID]];
+	}
 }
 
 
@@ -249,7 +254,7 @@
 	self.badgeButton.alpha   = [self.carWrapper getSetCarOwnedInProgress] ? 0.5f : 1.0f;
 	self.badgeButton.enabled = ![self.carWrapper getSetCarOwnedInProgress];
 	
-	[self.badgeButton setImage:(self.carWrapper.car.owned ? [ImageBank getBadgeOwned] : [ImageBank getBadgeUnowned]) forState:UIControlStateNormal];
+	[self.badgeButton setImage:([self.carWrapper.car isOwned] ? [ImageBank getBadgeOwned] : [ImageBank getBadgeUnowned]) forState:UIControlStateNormal];
 	
 	
 	// if we don't have a detail image...

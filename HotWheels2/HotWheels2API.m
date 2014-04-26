@@ -85,69 +85,69 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars, int
 ///////////////////////////
 // Set Car Owned
 //
-// Uses the Hot Wheels 2 API set owned endpoint to add or remove a car from a user's collection.
-
+// Uses the Hot Wheels 2 API set owned endpoint to add a car to the user's collection.
+// Handler will be called with an error or a timestamp, but never both.
 + (void)setCarOwned:(NSString *) userID
 			  carID:(NSString *) carID
-			  owned:(bool)       owned
-  completionHandler:(void (^)(HotWheels2APIError *error)) handler
+  completionHandler:(void (^)(HotWheels2APIError *error, int ownedTimestamp, bool alreadyOwned)) handler
 {
 	NSString *url = [NSString stringWithFormat:@"%@setCarOwned.php", HW2_API_BASE_URL];
 	
 	// construct the body
-	const char *httpBodyString = [[NSString stringWithFormat:@"userID=%@&carID=%@&owned=%@", [HotWheels2API encodeURIComponent:userID], [HotWheels2API encodeURIComponent:carID], owned? @"1" : @"0"] UTF8String];
-	
-	NSData *httpBody = [NSData dataWithBytes:httpBodyString length:strlen(httpBodyString)];
-	
-	// make request
-	[HotWheels2API makeRequest:url httpMethod:@"POST" httpBody:httpBody completionHandler:^(HotWheels2APIRequestError *error, NSURLRequest *request, NSHTTPURLResponse *response, NSData *responseBody)
-	{
-		if (error)
-			return handler(error);
-		
-		// make sure we got a 200 back
-		if (response.statusCode != 200)
-			return handler([[HotWheels2APIInvalidHTTPStatusCodeError alloc] initWithRequest:request andResponse:response andExpectedStatusCode:200]);
-		
-		handler(nil);
-	}];
-}
-
-///////////////////////////
-// Set Owned From QR Code
-//
-// Uses the Hot Wheels 2 API QR code endpoint to get a car based on a qr Code.
-// Handler will be called with an error or a cars, but never both.
-
-+ (void)setCarOwnedFromQRCode:(NSString *) userID
-				   qrCodeData:(NSString *) qrCodeData
-						owned:(bool)       owned
-			completionHandler:(void (^)(HotWheels2APIError *error, NSString *carName, bool ownedChanged)) handler
-{
-	NSString *url = [NSString stringWithFormat:@"%@setCarOwnedByQRCode.php", HW2_API_BASE_URL];
-	
-	// construct the body
-	const char *httpBodyString = [[NSString stringWithFormat:@"userID=%@&qrCodeData=%@&owned=%@", [HotWheels2API encodeURIComponent:userID], [HotWheels2API encodeURIComponent:qrCodeData], owned? @"1" : @"0"] UTF8String];
-	
+	const char *httpBodyString = [[NSString stringWithFormat:@"userID=%@&carID=%@", [HotWheels2API encodeURIComponent:userID], [HotWheels2API encodeURIComponent:carID]] UTF8String];
 	NSData *httpBody = [NSData dataWithBytes:httpBodyString length:strlen(httpBodyString)];
 	
 	// make request
 	[HotWheels2API getJSONFromURL:url httpMethod:@"POST" httpBody:httpBody completionHandler:^(HotWheels2APIError *error, NSURLRequest *request, NSHTTPURLResponse *response, NSObject *jsonObject)
 	{
 		if (error)
-			return handler(error, nil, false);
+			return handler(error, -1, false);
 		
+		// make sure we got a 200 back
+		if (response.statusCode != 200)
+			return handler([[HotWheels2APIInvalidHTTPStatusCodeError alloc] initWithRequest:request andResponse:response andExpectedStatusCode:200], -1, false);
+		
+		// make sure we got a single object back
 		if (![jsonObject isKindOfClass:[NSDictionary class]])
-			return handler([[HotWheels2APIInvalidJSONTypeError alloc] initWithRequest:request andResponse:response andJSONType:@"Array" andExpectedJSONType:@"Object"], nil, false);
+			return handler([[HotWheels2APIInvalidJSONTypeError alloc] initWithRequest:request andResponse:response andJSONType:@"Array" andExpectedJSONType:@"Object"], -1, false);
 		
+		// get the ownedTimestamp and alreadyOwned values
 		NSDictionary *json = (NSDictionary *)jsonObject;
+		int ownedTimestamp = [(NSNumber *)[json objectForKey:@"ownedTimestamp"] intValue];
+		bool alreadyOwned  = [(NSNumber *)[json objectForKey:@"alreadyOwned"] isEqualToNumber:[NSNumber numberWithInt:1]];
 		
-		NSString *carName = [json objectForKey:@"carName"];
-		bool ownedChanged = [(NSNumber *)[json objectForKey:@"ownedChanged"] isEqualToNumber:[NSNumber numberWithInt:1]];
-		
-		handler(nil, carName, ownedChanged);
+		handler(nil, ownedTimestamp, alreadyOwned);
 	}];
 }
+
+///////////////////////////
+// Set Car Unowned
+//
+// Uses the Hot Wheels 2 API set owned endpoint to remove a car from a user's collection.
++ (void)setCarUnowned:(NSString *) userID
+				carID:(NSString *) carID
+	completionHandler:(void (^)(HotWheels2APIError *error)) handler
+{
+	NSString *url = [NSString stringWithFormat:@"%@setCarUnowned.php", HW2_API_BASE_URL];
+	
+	// construct the body
+	const char *httpBodyString = [[NSString stringWithFormat:@"userID=%@&carID=%@", [HotWheels2API encodeURIComponent:userID], [HotWheels2API encodeURIComponent:carID]] UTF8String];
+	NSData *httpBody = [NSData dataWithBytes:httpBodyString length:strlen(httpBodyString)];
+	
+	// make request
+	[HotWheels2API makeRequest:url httpMethod:@"POST" httpBody:httpBody completionHandler:^(HotWheels2APIRequestError *error, NSURLRequest *request, NSHTTPURLResponse *response, NSData *responseBody)
+	 {
+		 if (error)
+			 return handler(error);
+		 
+		 // make sure we got a 204 back
+		 if (response.statusCode != 204)
+			 return handler([[HotWheels2APIInvalidHTTPStatusCodeError alloc] initWithRequest:request andResponse:response andExpectedStatusCode:204]);
+		 
+		 handler(nil);
+	 }];
+}
+
 
 
 ///////////////////////////
@@ -431,6 +431,9 @@ completionHandler:(void (^)(HotWheels2APIError* error, UIImage *image, bool wasC
 	
     [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
 	{
+		if ([urlStr rangeOfString:@"setCarOwned"].location != NSNotFound)
+			sleep(10);
+		
 		dispatch_async(dispatch_get_main_queue(), ^
 		{
 			if (error)

@@ -15,7 +15,7 @@
 #import "UserManager.h"
 
 @interface collectionViewController () <UICarGridViewDelegate>
-@property(nonatomic, strong) IBOutlet UIBarButtonItem *refreshButton;
+@property(nonatomic, strong) IBOutlet UIBarButtonItem    *refreshButton;
 @property(nonatomic, strong) IBOutlet UICarGridView   *carGridView;
 @property(nonatomic, strong) IBOutlet UILabel         *emptyCollectionLabel;
 
@@ -23,6 +23,8 @@
 @property(nonatomic, strong) UIActivityIndicatorView *activityView;
 
 @property bool collectionRequesting;
+@property int  sortBy;
+@property int  sortOrder;
 
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
 @end
@@ -42,7 +44,11 @@
 	self.activityButton = [[UIBarButtonItem alloc] initWithCustomView:self.activityView];
 	
 	// setup car grid
+	self.carGridView.topPadding = 112;
 	self.carGridView.carGridViewDelegate = self;
+	
+	self.sortBy    = 0;
+	self.sortOrder = 1;
 	
 	// get the collection
 	[self refreshCollection];
@@ -117,6 +123,40 @@
 			self.emptyCollectionLabel.hidden = cars.count > 0;
 		});
 	 }];
+}
+
+
+
+- (IBAction)sortBySegmentedControlValueChanged:(UISegmentedControl *) segmentedControl
+{
+	self.sortBy = segmentedControl.selectedSegmentIndex;
+	[self sort];
+}
+- (IBAction)sortOrderButtonPressed:(UIButton *) button
+{
+	self.sortOrder *= -1;
+	[self sort];
+}
+
+- (void)sort
+{
+	[self.carGridView sortCells:^NSComparisonResult(CarCell *carCellA, CarCell *carCellB)
+	{
+		Car *carA = [carCellA getCarWrapper].car;
+		Car *carB = [carCellB getCarWrapper].car;
+		
+		if (self.sortBy == 0)
+			return [carA.name caseInsensitiveCompare:carB.name] * self.sortOrder;
+		else
+		{
+			if (carA.ownedTimestamp < carB.ownedTimestamp)
+				return -1 * self.sortOrder;
+			else if (carA.ownedTimestamp > carB.ownedTimestamp)
+				return self.sortOrder;
+			else
+				return 0;
+		}
+	}];
 }
 
 

@@ -30,13 +30,11 @@ completionHandler:(void (^)(HotWheels2APIError *error, NSMutableArray *cars, int
 
 + (void)setCarOwned:(NSString *) userID
 			  carID:(NSString *) carID
-			  owned:(bool)       owned
-  completionHandler:(void (^)(HotWheels2APIError *error)) handler;
+  completionHandler:(void (^)(HotWheels2APIError *error, int ownedTimestamp, bool alreadyOwned)) handler;
 
-+ (void)setCarOwnedFromQRCode:(NSString *) userID
-				   qrCodeData:(NSString *) qrCodeData
-						owned:(bool)       owned
-			completionHandler:(void (^)(HotWheels2APIError *error, NSString *carName, bool ownedChanged)) handler;
++ (void)setCarUnowned:(NSString *) userID
+				carID:(NSString *) carID
+	completionHandler:(void (^)(HotWheels2APIError *error)) handler;
 
 + (void) getImage:(NSString *) urlStr
 	imageCacheKey:(NSString *) imageCacheKey

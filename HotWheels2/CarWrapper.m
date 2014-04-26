@@ -42,15 +42,14 @@
 
 - (void)update:(Car *) car
 {
+	int oldOwnedTimestamp = self.car.ownedTimestamp;
+	self.car = car;
 	
-	if (!self.getSetCarOwnedInProgress)
-	{
-		if (self.car.owned != car.owned)
-		{
-			self.car.owned = car.owned;
-			[self notifyListeners];
-		}
-	}
+	// set the timestamp to the old value if we are in the middle of an update
+	if (self.getSetCarOwnedInProgress)
+		self.car.ownedTimestamp = oldOwnedTimestamp;
+	
+	[self notifyListeners];
 }
 
 
@@ -77,6 +76,11 @@
 		}
 	}
 	
+	[self checkForRelease];
+}
+
+- (void)checkForRelease
+{
 	if (self.listeners.count == 0)
 		[CarManager releaseCarWrapper:self];
 }
@@ -144,8 +148,50 @@
 	 }];
 }
 
+- (void)setCarOwned:(NSString *)userID
+{
+	[self setCarOwned:userID completionHandler:nil];
+}
+- (void)setCarOwned:(NSString *)userID completionHandler:(void (^)(HotWheels2APIError *error, bool setCarOwnedInProgress, bool alreadyOwned))handler
+{
+	// dont do anything if we are already setting the ownership
+	if (self.setCarOwnedInProgress)
+	{
+		if (handler)
+			handler(nil, true, false);
+		
+		return;
+	}
+	
+	self.setCarOwnedInProgress = true;
+	
+	// tell the listeners we are now setting the ownership
+	[self notifyListeners];
+	
+	// set the ownership with HW2 API
+	[HotWheels2API setCarOwned:userID carID:self.car._id completionHandler:^(HotWheels2APIError *error, int ownedTimestamp, bool alreadyOwned)
+	{
+		self.setCarOwnedInProgress = false;
+		
+		if (error)
+		{
+			if (handler)
+				handler(error, false, false);
+			else
+				[[error createAlert:@"Unable to add Car" withMessagePrefix:[NSString stringWithFormat:@"Failed to add %@ to your collection because of the following error:", self.car.name]] show];
+		}
+		else
+			self.car.ownedTimestamp = ownedTimestamp;
+		
+		// tell the listerners we are done setting the ownership
+		[self notifyListeners];
+		
+		if (handler)
+			handler(nil, false, alreadyOwned);
+	}];
+}
 
-- (void)setCarOwned:(NSString *) userID owned:(bool) owned
+- (void)setCarUnowned:(NSString *)userID
 {
 	// dont do anything if we are already setting the ownership
 	if (self.setCarOwnedInProgress)
@@ -156,15 +202,14 @@
 	// tell the listeners we are now setting the ownership
 	[self notifyListeners];
 	
-	// set the ownership with HW2 API
-	[HotWheels2API setCarOwned:userID carID:self.car._id owned:owned completionHandler:^(HotWheels2APIError *error)
+	[HotWheels2API setCarUnowned:userID carID:self.car._id completionHandler:^(HotWheels2APIError *error)
 	{
 		self.setCarOwnedInProgress = false;
 		
 		if (error)
-			[[error createAlert:@"Unable to add Car" withMessagePrefix:[NSString stringWithFormat:@"Failed to add %@ to your collection because of the following error:", self.car.name]] show];
+			[[error createAlert:@"Unable to add Car" withMessagePrefix:[NSString stringWithFormat:@"Failed to remove %@ from your collection because of the following error:", self.car.name]] show];
 		else
-			self.car.owned = owned;
+			self.car.ownedTimestamp = -1;
 		
 		// tell the listerners we are done setting the ownership
 		[self notifyListeners];

@@ -23,15 +23,15 @@
 @property (nonatomic, strong) NSString *customToyNumber;     // nullable
 @property (nonatomic, strong) NSString *distinguishingNotes; // nullable
 @property (nonatomic, strong) NSString *barcodeData;         // nullable
+@property                     int       ownedTimestamp;
 
 @property (nonatomic, strong) NSString *iconImageURL;        // nullable
 @property (nonatomic, strong) NSString *detailImageURL;      // nullable
-
-
-@property bool owned;
 
 @property (nonatomic, strong) UIImage *iconImage;
 @property (nonatomic, strong) UIImage *detailImage;
 
 - (id) init:(NSDictionary *)jsonObject;
+
+- (bool) isOwned;
 @end

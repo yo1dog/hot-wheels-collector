@@ -7,7 +7,6 @@
 //
 
 #import "UICarGridView.h"
-#import "CarCell.h"
 #import "CarManager.h"
 #import "CarWrapper.h"
 

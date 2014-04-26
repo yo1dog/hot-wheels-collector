@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CarWrapper.h"
+#import "CarCell.h"
 
 @protocol UICarGridViewDelegate
 - (void)carWrapperSelected:(CarWrapper *) carWrapper;
@@ -18,8 +19,10 @@
 @property int topPadding;
 @property (nonatomic, assign) id<UICarGridViewDelegate> carGridViewDelegate;
 
-- (void)setCars: (NSMutableArray *) cars;
-- (void)setCars: (NSMutableArray *) cars showMoreButton:(bool) showMoreButton;
+- (void)setCars:(NSMutableArray *) cars;
+- (void)setCars:(NSMutableArray *) cars showMoreButton:(bool) showMoreButton;
 - (void)addCars:(NSMutableArray *) cars;
 - (void)addCars:(NSMutableArray *) cars showMoreButton:(bool) showMoreButton;
+
+- (void)sortCells:(NSComparisonResult (^)(CarCell* carCellA, CarCell*  carCellB)) comparator;
 @end

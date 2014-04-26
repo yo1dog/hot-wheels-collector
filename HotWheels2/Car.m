@@ -10,6 +10,7 @@
 #import "ImageCache.h"
 #import "ImageBank.h"
 
+
 @implementation Car
 
 - (id)init:(NSDictionary *)jsonObject
@@ -32,8 +33,10 @@
 	self.iconImageURL   = [jsonObject objectForKey:@"imageURL"];
 	self.detailImageURL = [jsonObject objectForKey:@"detailImageURL"];
 	
-	self.owned = [(NSNumber *)[jsonObject objectForKey:@"owned"] isEqualToNumber:[NSNumber numberWithInt:1]];
-	
+	NSObject *ownedTimestampObject = [jsonObject objectForKey:@"ownedTimestamp"];
+	if (ownedTimestampObject == (id)[NSNull null])
+		ownedTimestampObject = nil;
+	self.ownedTimestamp = ownedTimestampObject? [(NSNumber *)ownedTimestampObject intValue] : -1;
 	
 	if (self.vehicleID == (id)[NSNull null])
 		self.vehicleID = nil;
@@ -64,5 +67,10 @@
 		self.detailImage = [ImageCache getImage:self._id imageIsDetails:true];
 	
 	return self;
+}
+
+- (bool) isOwned
+{
+	return self.ownedTimestamp > -1;
 }
 @end

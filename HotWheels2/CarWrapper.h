@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Car.h"
+#import "HotWheels2APIErrors.h"
 #import "CarWrapperListenerDelegate.h"
 
 
@@ -23,8 +24,14 @@
 
 - (void)registerListenerDelegate:(id<CarWrapperListenerDelegate>) listenerDelegate;
 - (void)unregisterListenerDelegate:(id<CarWrapperListenerDelegate>) listenerDelegate;
+- (void)checkForRelease;
 
 - (void)downloadCarIconImage;
 - (void)downloadCarDetailImage;
-- (void)setCarOwned:(NSString *) userID owned:(bool) owned;
+
+- (void)setCarOwned:(NSString *) userID;
+- (void)setCarOwned:(NSString *) userID
+  completionHandler:(void (^)(HotWheels2APIError *error, bool setCarOwnedInProgress, bool alreadyOwned)) handler;
+
+- (void)setCarUnowned:(NSString *) userID;
 @end
