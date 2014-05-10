@@ -73,6 +73,9 @@
 - (void)viewDidLayoutSubviews
 {
 	self.scrollView.contentSize = CGSizeMake(320, self.car.barcodeData ? 600 : 452);
+	
+	if (self.scrollView.frame.size.height - self.scrollView.contentInset.top - self.scrollView.contentInset.bottom >= self.scrollView.contentSize.height)
+		self.scrollView.scrollEnabled = false;
 }
 
 - (void)dealloc
@@ -144,7 +147,7 @@
 	UIView *overlay = [[UIView alloc] initWithFrame:loadingView.bounds];
 	overlay.backgroundColor = [UIColor blackColor];
 	overlay.opaque = false;
-	overlay.alpha = 0.5;
+	overlay.alpha = 0.5f;
 	
 	UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithFrame:
 											 CGRectMake(loadingView.frame.size.width  * 0.5f - 40,

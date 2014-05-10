@@ -25,6 +25,8 @@
 @property (nonatomic, strong) NSString *barcodeData;         // nullable
 @property                     int       ownedTimestamp;
 
+@property (nonatomic, strong) NSString *sortName;
+
 @property (nonatomic, strong) NSString *iconImageURL;        // nullable
 @property (nonatomic, strong) NSString *detailImageURL;      // nullable
 

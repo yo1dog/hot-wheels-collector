@@ -57,7 +57,7 @@
 	[self addSubview:self.iconImageView];
 	[self addSubview:self.nameLabel];
 	[self addSubview:self.activityIndicatorView];
-	[self addSubview:self.badgeButton];
+	//[self addSubview:self.badgeButton];
 	
 	return self;
 }
@@ -113,21 +113,27 @@
 {
 	[self updateUI];
 	
-	// if we downloaded the icon image, animate it in
-	// but only if this cell is visible
 	UIScrollView *superview = (UIScrollView *)self.superview;
 	
+	// if we downloaded the icon image, animate it in
+	// but only if this cell is visible and not a custom car
 	if (event == CWUE_DoneDownloadingIconImage &&
 		self.frame.origin.y + self.frame.size.height > superview.contentOffset.y &&
 		self.frame.origin.y < superview.contentOffset.y + superview.frame.size.height)
 	{
-		CGRect originalFrame = self.iconImageView.frame;
-		self.iconImageView.frame = CGRectMake(-40, -10, 150, 100);
-		
-		[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionTransitionNone animations:^{
-			self.iconImageView.frame = originalFrame;
-		} completion:nil];
-		
+		// only animate position if the car is not custom
+		if (!self.carWrapper.car.isCustom)
+		{
+			CGRect originalFrame = self.iconImageView.frame;
+			self.iconImageView.frame = CGRectMake(-40, -10, 150, 100);
+			
+			[UIView animateWithDuration:0.25f delay:0.0f options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionTransitionNone animations:^{
+				self.iconImageView.frame = originalFrame;
+			} completion:^ (BOOL finished) {
+				if (finished)
+					self.iconImageView.frame = originalFrame;
+			}];
+		}
 		
 		self.iconImageView.opaque = false;
 		self.iconImageView.alpha = 0.0f;
@@ -136,6 +142,7 @@
 			self.iconImageView.alpha = 1.0;
 		} completion:^ (BOOL finished) {
 			if (finished)
+				self.iconImageView.alpha = 1.0;
 				self.iconImageView.opaque = true;
 		}];
 	}

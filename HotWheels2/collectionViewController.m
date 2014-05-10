@@ -18,13 +18,16 @@
 @property(nonatomic, strong) IBOutlet UIBarButtonItem *refreshButton;
 @property(nonatomic, strong) IBOutlet UICarGridView   *carGridView;
 @property(nonatomic, strong) IBOutlet UILabel         *emptyCollectionLabel;
+@property(nonatomic, strong) IBOutlet UIButton        *sortOrderButton;
 
 @property(nonatomic, strong) UIBarButtonItem         *activityButton;
 @property(nonatomic, strong) UIActivityIndicatorView *activityView;
 
+@property(nonatomic, strong) NSArray *cars;
 @property bool collectionRequesting;
 @property int  sortBy;
 @property int  sortOrder;
+@property(nonatomic, strong) NSString *filterString;
 
 @property(nonatomic, weak) CarWrapper *selectedCarWrapper;
 @end
@@ -113,7 +116,8 @@
 		}
 	
 		// update screen
-		[self.carGridView setCars:cars];
+		self.cars = cars;
+		[self sortAndFilter];
 		
 		self.navigationItem.title = [NSString stringWithFormat:@"Collection (%i)", (int)cars.count];
 		
@@ -124,26 +128,64 @@
 
 
 
-- (IBAction)sortBySegmentedControlValueChanged:(UISegmentedControl *) segmentedControl
+- (IBAction)sortBySegmentedControlValueChanged:(UISegmentedControl *) sortBySegmentedControl
 {
-	self.sortBy = segmentedControl.selectedSegmentIndex;
-	[self sort];
+	self.sortBy = sortBySegmentedControl.selectedSegmentIndex;
+	self.sortOrder *= -1; // date should default to desc (newest) while name should default to asc (A-Z)
+	
+	[self setSortOrderButtonText];
+	[self sortAndFilter];
 }
-- (IBAction)sortOrderButtonPressed:(UIButton *) button
+- (IBAction)sortOrderButtonPressed:(UIButton *) sortOrderButton;
 {
 	self.sortOrder *= -1;
-	[self sort];
+	
+	[self setSortOrderButtonText];
+	[self sortAndFilter];
+}
+- (IBAction)filterTextFieldChanged:(UITextField *) filterTextField
+{
+	self.filterString = filterTextField.text;
+	
+	[self sortAndFilter];
 }
 
-- (void)sort
+- (void)setSortOrderButtonText
 {
+	[self.sortOrderButton setTitle:(self.sortBy == 0?
+									self.sortOrder == 1? @"A - Z"  : @"Z - A" :
+									self.sortOrder == 1? @"Oldest" : @"Newest")
+						  forState:UIControlStateNormal];
+}
+
+- (void)sortAndFilter
+{
+	// filter
+	NSMutableArray *filteredCars;
+	
+	if (self.filterString && self.filterString.length > 0)
+	{
+		filteredCars = [[NSMutableArray alloc] init];
+		for (Car *car in self.cars)
+		{
+			if ([car.name rangeOfString:self.filterString options:NSCaseInsensitiveSearch].location != NSNotFound)
+				[filteredCars addObject:car];
+		}
+	}
+	else
+		filteredCars = [[NSMutableArray alloc] initWithArray:self.cars copyItems:false];
+	
+	// set cars
+	[self.carGridView setCars:filteredCars];
+	
+	// sort
 	[self.carGridView sortCells:^NSComparisonResult(CarCell *carCellA, CarCell *carCellB)
 	{
 		Car *carA = [carCellA getCarWrapper].car;
 		Car *carB = [carCellB getCarWrapper].car;
 		
 		if (self.sortBy == 0)
-			return [carA.name caseInsensitiveCompare:carB.name] * self.sortOrder;
+			return [carA.sortName caseInsensitiveCompare:carB.sortName] * self.sortOrder;
 		else
 		{
 			if (carA.ownedTimestamp < carB.ownedTimestamp)

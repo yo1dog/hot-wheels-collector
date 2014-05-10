@@ -30,7 +30,9 @@
 	self.distinguishingNotes = [jsonObject objectForKey:@"distinguishingNotes"];
 	self.barcodeData         = [jsonObject objectForKey:@"barcodeData"];
 	
-	self.iconImageURL   = [jsonObject objectForKey:@"imageURL"];
+	self.sortName = [jsonObject objectForKey:@"sortName"];
+	
+	self.iconImageURL   = [jsonObject objectForKey:@"iconImageURL"];
 	self.detailImageURL = [jsonObject objectForKey:@"detailImageURL"];
 	
 	NSObject *ownedTimestampObject = [jsonObject objectForKey:@"ownedTimestamp"];

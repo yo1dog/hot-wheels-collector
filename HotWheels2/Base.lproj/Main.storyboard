@@ -399,6 +399,9 @@
                             </button>
                         </barButtonItem>
                     </navigationItem>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
                         <outlet property="activityView" destination="jYJ-pJ-xu0" id="pm2-t4-TnD"/>
@@ -532,7 +535,7 @@
                         <viewControllerLayoutGuide type="top" id="VJi-Qa-RTF"/>
                         <viewControllerLayoutGuide type="bottom" id="a0a-I4-VS2"/>
                     </layoutGuides>
-                    <scrollView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" id="UrX-9Y-Sk1" customClass="UICarGridView">
+                    <scrollView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" id="UrX-9Y-Sk1" customClass="UICarGridView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
@@ -563,6 +566,9 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <action selector="filterTextFieldChanged:" destination="QUy-BD-bpt" eventType="editingChanged" id="GRv-uo-pte"/>
+                                        </connections>
                                     </textField>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="YSP-bz-sxc">
                                         <rect key="frame" x="83" y="17" width="163" height="29"/>
@@ -572,13 +578,16 @@
                                             <segment title="Date"/>
                                         </segments>
                                         <connections>
-                                            <action selector="sortByValueChanged:" destination="QUy-BD-bpt" eventType="valueChanged" id="CWU-j1-Eg7"/>
+                                            <action selector="sortBySegmentedControlValueChanged:" destination="QUy-BD-bpt" eventType="valueChanged" id="i5J-RC-wpv"/>
                                         </connections>
                                     </segmentedControl>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwm-Ij-nuE">
-                                        <rect key="frame" x="254" y="17" width="46" height="30"/>
+                                        <rect key="frame" x="251" y="17" width="55" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="A - Z"/>
+                                        <connections>
+                                            <action selector="sortOrderButtonPressed:" destination="QUy-BD-bpt" eventType="touchUpInside" id="VtF-RQ-oer"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.78000000000000003" alpha="1" colorSpace="calibratedWhite"/>
@@ -600,6 +609,7 @@
                         <outlet property="carGridView" destination="UrX-9Y-Sk1" id="agN-KR-zEy"/>
                         <outlet property="emptyCollectionLabel" destination="gVW-yg-b73" id="srq-KR-gEj"/>
                         <outlet property="refreshButton" destination="d0O-EV-Tmd" id="neL-HW-jbY"/>
+                        <outlet property="sortOrderButton" destination="lwm-Ij-nuE" id="LEY-b9-PRu"/>
                         <segue destination="280-7O-SwU" kind="push" identifier="collectionToDetails" id="OpR-hc-Wgx"/>
                     </connections>
                 </viewController>
@@ -1161,6 +1171,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="tCe-cz-g9f"/>
+        <segue reference="OpR-hc-Wgx"/>
     </inferredMetricsTieBreakers>
 </document>
